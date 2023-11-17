@@ -11,4 +11,15 @@ problem_storage_root:
 # If you're unsure of what values a language needs, your best bet is to consult the source of the executor:
 # <https://github.com/DMOJ/judge/tree/master/dmoj/executors>
 runtime:
+  cat: /usr/bin/cat # text
+  g++: /usr/bin/g++
+  g++20: /usr/bin/g++
   gcc: /usr/bin/gcc
+  gcc11: /usr/bin/gcc
+  pypy3: /opt/pypy3/bin/pypy
+  pypy3dir: /opt/pypy3/
+  python3: /usr/bin/python3
+  java: /usr/bin/java
+  java17: /usr/bin/java
+  javac: /usr/bin/javac
+  javac17: /usr/bin/javac

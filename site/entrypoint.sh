@@ -11,7 +11,7 @@ done
 # GRANT ALL PRIVILEGES ON dmoj.* to 'dmoj'@'%' IDENTIFIED BY 'password';
 # exit
 
-cp /home/ubuntu/addedproblems/* /home/ubuntu/site/judge/fixtures/
+cp /home/ubuntu/addedjsondata/* /home/ubuntu/site/judge/fixtures/
 
 . bin/activate
 
@@ -28,8 +28,10 @@ if [ ! -e /var/www/static ]; then
     python3 manage.py migrate
     python3 manage.py loaddata navbar
     python3 manage.py loaddata language_all
+    python3 manage.py loaddata admindata
     python3 manage.py loaddata demo
     python3 manage.py loaddata problems
+    python3 manage.py loaddata additionaldata
 fi
 
 # for communication with judge server

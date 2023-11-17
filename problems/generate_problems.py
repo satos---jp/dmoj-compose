@@ -1,4 +1,4 @@
-import importlib, yaml
+import importlib, yaml, os, zipfile, json, textwrap
 
 SITE="../compose/problems_site"
 PROB="../compose/problems"
@@ -37,17 +37,17 @@ def Prob2Stmt(prob):
 
             ],
             "date": "2000-01-01T00:00:00Z",
-            "description": prob.desc,
+            "description": textwrap.dedent(prob.desc),
             "group": 1,
-            "is_manually_managed": false,
-            "is_public": true,
-            "license": null,
+            "is_manually_managed": False,
+            "is_public": True,
+            "license": None,
             "memory_limit": 65536,
             "name": prob.title,
             "og_image": "",
-            "partial": true,
+            "partial": True,
             "points": 5.0,
-            "short_circuit": false,
+            "short_circuit": False,
             "summary": "",
             "testers": [],
             "time_limit": 2.0,
@@ -57,13 +57,13 @@ def Prob2Stmt(prob):
             "user_count": 0
         },
         "model": "judge.problem",
-        "pk": 2
+        "pk": pk_base
     }
 
 def problem2init(prob):
 	batch = []
 	for i,pd in enumerate(prob.problems):
-		batch.append({'in': '{prob.id}.{i}.in','out': '{prob.id}.{i}.out'})
+		batch.append({'in': f'{prob.id}.{i}.in','out': f'{prob.id}.{i}.out'})
 	
 	return yaml.dump({
 		'archive': f'{prob.id}.zip',
@@ -84,8 +84,8 @@ for fn in files:
 	statements.append(Prob2Stmt(prob))
 	
 	# Problem data
-	d = os.path.join(PROB,m)
-	os.makedir(d,exist_ok=True)
+	d = os.path.join(PROB,f'{prob.id}')
+	os.makedirs(d,exist_ok=True)
 	with open(os.path.join(d,'init.yml'),'w') as fp:
 		fp.write(problem2init(prob))
 	

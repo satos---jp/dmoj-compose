@@ -23,12 +23,12 @@ services:
       - DB_DATABASE=dmoj
       - DB_HOST=db
       - DB_USER=dmoj
-      - DB_PASSWORD=password
+      - DB_PASSWORD=t673gh8o034t435y4it34r38ce3ko45t4ij95yh4
       - TZ=Asia/Tokyo
       - DEBUG=false # true/false
       - TWO_STEP_REGISTRATION=false # true/false false の場合はメール認証無し
     volumes:
-      - ./problems_site:/home/ubuntu/addedproblems
+      - ./sitejsondata:/home/ubuntu/addedjsondata
     ports:
       - 80:80
       - 8000:8000

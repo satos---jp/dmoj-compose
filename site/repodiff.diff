@@ -346,63 +346,195 @@ index 00000000..116bc4ae
 +# You may add whatever django configuration you would like here.
 +# Do try to keep it separate so you can quickly patch in new settings.
 +DMOJ_PROBLEM_DATA_ROOT = "/home/ubuntu/problems"
-diff --git a/gend.sh b/gend.sh
+diff --git a/gen_diff.sh b/gen_diff.sh
 new file mode 100755
-index 00000000..d62d380a
+index 00000000..94f6d74a
 --- /dev/null
-+++ b/gend.sh
++++ b/gen_diff.sh
 @@ -0,0 +1,6 @@
 +set -eux
-+git add *
-+git commit --amend
 +
-+git diff HEAD~ > ../dmoj-private/dmoj_docker/docker/site/repodiff.diff
++# git diff master > ../dmoj-private/dmoj_docker/docker/site/repodiff.diff
++
++git diff master > ../satos-judger-yml/site/repodiff.diff
 +
 diff --git a/judge/fixtures/demo.json b/judge/fixtures/demo.json
-index 306d8b5e..8812a77f 100644
+index 306d8b5e..0d4f101c 100644
 --- a/judge/fixtures/demo.json
 +++ b/judge/fixtures/demo.json
-@@ -168,5 +168,14 @@
-         },
-         "model": "sites.site",
-         "pk": 1
-+    },
-+    {
-+        "fields": {
-+            "name": "ExampleJudge",
-+            "auth_key": "azrJwgc8tFNjivAbnIDMGIzWDr5fcbdRx7L8gAdnwXXkBLBQXgIbo5BTUaE5lFnDyBfGzw9LaXjG0kteduEQaKul9rUaoNcd",
-+            "created": "2021-01-01T00:00:00.000Z"
-+        },
-+        "model": "judge.Judge",
-+        "pk": 1
-     }
+@@ -1,172 +1,2 @@
+ [
+-    {
+-        "fields": {
+-            "about": "",
+-            "ace_theme": "github",
+-            "current_contest": null,
+-            "display_rank": "admin",
+-            "ip": "10.0.2.2",
+-            "language": 1,
+-            "last_access": "2017-12-02T08:57:10.093Z",
+-            "math_engine": "auto",
+-            "mute": false,
+-            "organizations": [
+-                1
+-            ],
+-            "performance_points": 0.0,
+-            "points": 0.0,
+-            "problem_count": 0,
+-            "rating": null,
+-            "timezone": "America/Toronto",
+-            "user": 1,
+-            "user_script": ""
+-        },
+-        "model": "judge.profile",
+-        "pk": 1
+-    },
+-    {
+-        "fields": {
+-            "date_joined": "2017-12-02T08:34:17.408Z",
+-            "email": "",
+-            "first_name": "",
+-            "groups": [
+-
+-            ],
+-            "is_active": true,
+-            "is_staff": true,
+-            "is_superuser": true,
+-            "last_login": "2017-12-02T08:34:31.840Z",
+-            "last_name": "",
+-            "password": "pbkdf2_sha256$36000$eFRRZq4DgktS$md1gk0bBJb7PH/+3YEXkcCW8K+KmiI+y/amqR32G2DY=",
+-            "user_permissions": [
+-
+-            ],
+-            "username": "admin"
+-        },
+-        "model": "auth.user",
+-        "pk": 1
+-    },
+-    {
+-        "fields": {
+-            "about": "This is a sample organization. You can use organizations to split up your user base, host private contests, and more.",
+-            "access_code": null,
+-            "admins": [
+-                1
+-            ],
+-            "creation_date": "2017-12-02T08:50:25.199Z",
+-            "is_open": true,
+-            "slug": "dmoj",
+-            "name": "DMOJ: Modern Online Judge",
+-            "short_name": "DMOJ",
+-            "slots": null
+-        },
+-        "model": "judge.organization",
+-        "pk": 1
+-    },
+-    {
+-        "fields": {
+-            "full_name": "Simple Math",
+-            "name": "Simple Math"
+-        },
+-        "model": "judge.problemtype",
+-        "pk": 1
+-    },
+-    {
+-        "fields": {
+-            "full_name": "Uncategorized",
+-            "name": "Uncategorized"
+-        },
+-        "model": "judge.problemgroup",
+-        "pk": 1
+-    },
+-    {
+-        "fields": {
+-            "ac_rate": 0.0,
+-            "allowed_languages": [
+-                3,
+-                4,
+-                5,
+-                6,
+-                2,
+-                7,
+-                1,
+-                8
+-            ],
+-            "authors": [
+-                1
+-            ],
+-            "banned_users": [
+-
+-            ],
+-            "code": "aplusb",
+-            "curators": [
+-
+-            ],
+-            "date": "2017-12-02T05:00:00Z",
+-            "description": "Tudor is sitting in math class, on his laptop. Clearly, he is not paying attention in this situation. However, he gets called on by his math teacher to do some problems. Since his math teacher did not expect much from Tudor, he only needs to do some simple addition problems. However, simple for you and I may not be simple for Tudor, so please help him!\n\n## Input Specification\n\nThe first line will contain an integer ~N~ (~1 \\le N \\le 100\\,000~), the number of addition problems Tudor needs to do. The next ~N~ lines will each contain two space-separated integers whose absolute value is less than ~1\\,000\\,000\\,000~, the two integers Tudor needs to add.\n\n## Output Specification\n\nOutput ~N~ lines of one integer each, the solutions to the addition problems in order.\n\n## Sample Input\n\n    2\n    1 1\n    -1 0\n\n## Sample Output\n\n    2\n    -1",
+-            "group": 1,
+-            "is_manually_managed": false,
+-            "is_public": true,
+-            "license": null,
+-            "memory_limit": 65536,
+-            "name": "A Plus B",
+-            "og_image": "",
+-            "partial": true,
+-            "points": 5.0,
+-            "short_circuit": false,
+-            "summary": "",
+-            "testers": [
+-
+-            ],
+-            "time_limit": 2.0,
+-            "types": [
+-                1
+-            ],
+-            "user_count": 0
+-        },
+-        "model": "judge.problem",
+-        "pk": 1
+-    },
+-    {
+-        "fields": {
+-            "authors": [
+-                1
+-            ],
+-            "content": "Welcome to the DMOJ!\n\n```python\nprint('Hello, World!')\n```\n\nYou can get started by checking out [this problem we've added for you](/problem/aplusb).",
+-            "og_image": "",
+-            "publish_on": "2017-12-02T05:00:00Z",
+-            "slug": "first-post",
+-            "sticky": true,
+-            "summary": "",
+-            "title": "First Post",
+-            "visible": true
+-        },
+-        "model": "judge.blogpost",
+-        "pk": 1
+-    },
+-    {
+-        "fields": {
+-            "author": 1,
+-            "body": "This is your first comment!",
+-            "hidden": false,
+-            "level": 0,
+-            "lft": 1,
+-            "page": "b:1",
+-            "parent": null,
+-            "rght": 2,
+-            "score": 0,
+-            "time": "2017-12-02T08:46:54.007Z",
+-            "tree_id": 1
+-        },
+-        "model": "judge.comment",
+-        "pk": 1
+-    },
+-    {
+-        "fields": {
+-            "domain": "localhost:8081",
+-            "name": "DMOJ: Modern Online Judge"
+-        },
+-        "model": "sites.site",
+-        "pk": 1
+-    }
  ]
-diff --git a/judge/utils/problem_data.py b/judge/utils/problem_data.py
-index ce59d29a..5d7d0303 100644
---- a/judge/utils/problem_data.py
-+++ b/judge/utils/problem_data.py
-@@ -71,7 +71,9 @@ class ProblemDataCompiler(object):
-                 }
-             return case.checker
- 
-+        print("Cases",self.cases)
-         for i, case in enumerate(self.cases, 1):
-+            print(i,case)
-             if case.type == 'C':
-                 data = {}
-                 if batch:
-@@ -79,7 +81,10 @@ class ProblemDataCompiler(object):
-                     case.is_pretest = batch['is_pretest']
-                 else:
-                     if case.points is None:
--                        raise ProblemDataError(_('Points must be defined for non-batch case #%d.') % i)
-+                        s = ('Points must be defined for non-batch case #%d.(%s,%s)') % (i,str(self.cases),repr(self.cases))
-+                        s += str(case.input_file) + str(case.output_file)
-+                        s += str(case.points)
-+                        raise ProblemDataError(s)
-                     data['is_pretest'] = case.is_pretest
- 
-                 if not self.generator:
 diff --git a/judge/views/register.py b/judge/views/register.py
 index f5cdd640..253c2708 100644
 --- a/judge/views/register.py

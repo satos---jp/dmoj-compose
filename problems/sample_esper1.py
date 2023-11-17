@@ -1,5 +1,7 @@
 import random
 
+# print(int(input())+3)
+
 class Problem:
 	def __init__(self):
 		self.id = "instructionless1"
