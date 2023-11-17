@@ -1,0 +1,57 @@
+version: "3"
+services:
+  redis:
+    image: redis:7.0
+    restart: always
+
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    ports:
+      - 3306:3306
+
+  web:
+    image: satosjp/dmoj-site
+    container_name: web
+    stdin_open: true
+    tty: true
+    environment:
+      - DB_DATABASE=dmoj
+      - DB_HOST=db
+      - DB_USER=dmoj
+      - DB_PASSWORD=password
+      - TZ=Asia/Tokyo
+      - DEBUG=false # true/false
+      - TWO_STEP_REGISTRATION=false # true/false false の場合はメール認証無し
+    volumes:
+      - ./problems_site:/home/ubuntu/addedproblems
+    ports:
+      - 80:80
+      - 8000:8000
+      - 9999:9999
+    depends_on:
+      - db
+      - redis
+
+  # judger:
+  #   image: satosjp/dmoj-judger
+  #   restart: always
+  #   volumes:
+  #     - ./problems:/home/judge/problems
+  #   tty: true
+  #   cap_add:
+  #     - SYS_PTRACE
+  #   network_mode: host
+  #   environment:
+  #     - PROBLEM_PATH=/home/judge/problems
+  #     - SITE_HOST=localhost
+  #     - JUDGE_NAME=ExampleJudge
+  #     - JUDGE_KEY=azrJwgc8tFNjivAbnIDMGIzWDr5fcbdRx7L8gAdnwXXkBLBQXgIbo5BTUaE5lFnDyBfGzw9LaXjG0kteduEQaKul9rUaoNcd
+  #   depends_on:
+  #     - web
+
+
