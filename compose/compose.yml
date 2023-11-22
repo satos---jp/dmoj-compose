@@ -8,9 +8,10 @@ services:
     image: mysql:5.7
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ROOT_PASSWORD=tfg54y65j67gh5676fk8g755g6j6vb7inbv56
     volumes:
       - ./db:/docker-entrypoint-initdb.d
+      - ./db_after_dmoj:/initafterdmoj
     ports:
       - 3306:3306
 
@@ -36,6 +37,14 @@ services:
     depends_on:
       - db
       - redis
+
+  webproblem:
+    restart: always
+    build: ./webproblem/
+    volumes:
+      - ./webproblem/src/supervisord.conf:/etc/supervisord.conf:ro
+    depends_on:
+      - db
 
   # judger:
   #   image: satosjp/dmoj-judger

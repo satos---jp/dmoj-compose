@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+		<title>A Web Problem</title>
+	</head>
+	<body>
+		<h1>Hall of Fame</h1>
+		<div> Username: <%= username %> </div>
+		<form id="loginform" method="POST">
+			<input name="username" type="text" placeholder="username">
+			<input name="password" type="text" placeholder="password">
+			<button type="submit">Login</button>
+		</form>
+		<div> <%= result %> </div>
+		<form id="" method="POST">
+			<input name="postMessage" type="text" placeholder="msg">
+			<button type="submit">Post Message</button>
+		</form>
+		<%- hof %>
+	</body>
+</html>
