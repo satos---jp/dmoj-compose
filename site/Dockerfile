@@ -31,8 +31,13 @@ RUN git clone --depth 1 --recursive https://github.com/DMOJ/online-judge site
 
 RUN sudo chown -R ubuntu:www-data site
 
+RUN git clone --depth 1 --recursive -b 3.2.23 https://github.com/django/django django
+
 COPY repodiff.diff site/repodiff.diff
 RUN cd site && git apply repodiff.diff
+
+COPY djangodiff.diff django/djangodiff.diff
+RUN cd django && git apply djangodiff.diff
 
 RUN cd /home/ubuntu && \
     python3 -m venv site
@@ -41,6 +46,11 @@ RUN cd /home/ubuntu && \
 RUN sudo apt-get install -y pkg-config
 
 WORKDIR /home/ubuntu/site
+
+# Install editted Django
+RUN . bin/activate && \
+    pip install -e /home/ubuntu/django
+
 RUN . bin/activate && \
     pip install -r requirements.txt && \
     pip install mysqlclient django-redis

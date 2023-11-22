@@ -565,3 +565,14 @@ index f5cdd640..253c2708 100644
  from registration.forms import RegistrationForm
  from sortedm2m.forms import SortedMultipleChoiceField
  
+diff --git a/requirements.txt b/requirements.txt
+index db098fab..088a38b4 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,4 +1,5 @@
+-Django>=3.2,<4
++# Django>=3.2,<4
++# Django @ git+https://github.com/satos---jp/django-private.git
+ django_compressor>=3
+ django-mptt>=0.13
+ django-pagedown<2

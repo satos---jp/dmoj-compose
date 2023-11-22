@@ -37,7 +37,7 @@
             "is_superuser": true,
             "last_login": "2017-12-02T08:34:31.840Z",
             "last_name": "",
-            "password": "pbkdf2_sha256$36000$eFRRZq4DgktS$md1gk0bBJb7PH/+3YEXkcCW8K+KmiI+y/amqR32G2DY=",
+            "password": "pbkdf2_sha256$36000$eFRRZq4DgktS$EXKnCr+xxogdpfmxREuLXyP+esU0Rr87FmIGccrNc18=",
             "user_permissions": [
 
             ],

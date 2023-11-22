@@ -1,0 +1,86 @@
+diff --git a/django/conf/global_settings.py b/django/conf/global_settings.py
+index 4a27887a8f..05fda8ad33 100644
+--- a/django/conf/global_settings.py
++++ b/django/conf/global_settings.py
+@@ -533,6 +533,7 @@ PASSWORD_HASHERS = [
+     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+     'django.contrib.auth.hashers.Argon2PasswordHasher',
+     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
++    "django.contrib.auth.hashers.SHA1PasswordHasher",
+ ]
+ 
+ AUTH_PASSWORD_VALIDATORS = []
+diff --git a/django/contrib/auth/hashers.py b/django/contrib/auth/hashers.py
+index 86ae7f42a8..3e52ca93aa 100644
+--- a/django/contrib/auth/hashers.py
++++ b/django/contrib/auth/hashers.py
+@@ -16,6 +16,11 @@ from django.utils.crypto import (
+ from django.utils.module_loading import import_string
+ from django.utils.translation import gettext_noop as _
+ 
++import sys
++def eprint(*arg):
++    sys.stderr.write(str(arg))
++    sys.stderr.flush()
++
+ UNUSABLE_PASSWORD_PREFIX = '!'  # This will never be a valid encoded hash
+ UNUSABLE_PASSWORD_SUFFIX_LENGTH = 40  # number of random chars to add after UNUSABLE_PASSWORD_PREFIX
+ 
+@@ -40,16 +45,20 @@ def check_password(password, encoded, setter=None, preferred='default'):
+         return False
+ 
+     preferred = get_hasher(preferred)
++    eprint("Verifying password",password, encoded)
+     try:
+         hasher = identify_hasher(encoded)
+     except ValueError:
+         # encoded is gibberish or uses a hasher that's no longer installed.
+         return False
+ 
++    eprint("Hasher is",hasher)
+     hasher_changed = hasher.algorithm != preferred.algorithm
+-    must_update = hasher_changed or preferred.must_update(encoded)
++    # must_update = hasher_changed or preferred.must_update(encoded)
++    must_update = False # Stop updating Hash(Hehe)
+     is_correct = hasher.verify(password, encoded)
+ 
++    eprint("IsCorrect",is_correct)
+     # If the hasher didn't change (we don't protect against enumeration if it
+     # does) and the password should get updated, try to close the timing gap
+     # between the work factor of the current encoded password and the default
+@@ -255,6 +264,35 @@ class BasePasswordHasher:
+         """
+         warnings.warn('subclasses of BasePasswordHasher should provide a harden_runtime() method')
+ 
++class SHA1PasswordHasher(BasePasswordHasher):
++    """
++    The SHA1 password hashing algorithm (not recommended)
++    """
++    algorithm = "sha1"
++
++    def encode(self, password, salt):
++        assert password is not None
++        assert salt and '$' not in salt
++        hash = hashlib.sha1((salt + password).encode()).hexdigest()
++        return "%s$%s$%s" % (self.algorithm, salt, hash)
++
++    def verify(self, password, encoded):
++        algorithm, salt, hash = encoded.split('$', 2)
++        assert algorithm == self.algorithm
++        encoded_2 = self.encode(password, salt)
++        return constant_time_compare(encoded, encoded_2)
++
++    def safe_summary(self, encoded):
++        algorithm, salt, hash = encoded.split('$', 2)
++        assert algorithm == self.algorithm
++        return OrderedDict([
++            (_('algorithm'), algorithm),
++            (_('salt'), mask_hash(salt, show=2)),
++            (_('hash'), mask_hash(hash)),
++        ])
++
++    def harden_runtime(self, password, encoded):
++        pass
+ 
+ class PBKDF2PasswordHasher(BasePasswordHasher):
+     """
