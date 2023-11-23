@@ -30,6 +30,7 @@ services:
       - TWO_STEP_REGISTRATION=false # true/false false の場合はメール認証無し
     volumes:
       - ./sitejsondata:/home/ubuntu/addedjsondata
+      - ./sitestatic:/home/ubuntu/addedstaticdata
     ports:
       - 80:80
       - 8000:8000

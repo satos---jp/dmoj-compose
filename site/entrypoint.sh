@@ -12,6 +12,7 @@ done
 # exit
 
 cp /home/ubuntu/addedjsondata/* /home/ubuntu/site/judge/fixtures/
+cp -r /home/ubuntu/addedstaticdata/ /home/ubuntu/site/resources/atgtstaticdata
 
 . bin/activate
 
