@@ -49,6 +49,7 @@ class Problem:
 		random.setstate(st)
 		
 		self.problems = probs
-		
+		self.langs = ["procon"]
+
 		
 		

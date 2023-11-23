@@ -1,13 +1,92 @@
 import importlib, yaml, os, zipfile, json, textwrap
 
-SITE="../compose/problems_site"
+SITE="../compose/sitejsondata"
 PROB="../compose/problems"
 
 files = [
 	"sample_esper1",
+    "ctf_web",
 	# "aplusb",
 ]
 
+"""
+mysql> select id, name from judge_language;
++----+----------------+
+| id | name           |
++----+----------------+
+|  1 | Python 2       |
+|  2 | C++03          |
+|  4 | Ruby 1.8       |
+|  5 | PHP            |
+|  6 | Perl           |
+|  8 | Python 3       |
+|  9 | C              |
+| 10 | Pascal         |
+| 13 | C++11          |
+| 14 | C#             |
+| 15 | Haskell        |
+| 16 | Go             |
+| 17 | PyPy 2         |
+| 18 | PyPy 3         |
+| 19 | Fortran        |
+| 20 | NASM           |
+| 21 | Ruby           |
+| 22 | Lua            |
+| 23 | OCaml          |
+| 24 | Turing         |
+| 25 | Java 8         |
+| 27 | V8 JavaScript  |
+| 29 | D              |
+| 30 | Brain****      |
+| 31 | Objective-C    |
+| 33 | C++14          |
+| 34 | Visual Basic   |
+| 35 | Clang          |
+| 36 | Clang++        |
+| 37 | Dart           |
+| 38 | TCL            |
+| 39 | COBOL          |
+| 40 | F#             |
+| 41 | Scheme         |
+| 42 | Ada            |
+| 43 | AWK            |
+| 44 | Rust           |
+| 45 | CoffeeScript   |
+| 47 | Prolog         |
+| 49 | Forth          |
+| 50 | INTERCAL       |
+| 51 | Text           |
+| 52 | Scala          |
+| 54 | Swift          |
+| 56 | Assembly (x86) |
+| 57 | Assembly (ARM) |
+| 58 | Assembly (x64) |
+| 60 | Sed            |
+| 61 | Java           |
+| 62 | NASM64         |
+| 63 | Racket         |
+| 64 | Groovy         |
+| 67 | Kotlin         |
+| 68 | Pike           |
+| 69 | C++17          |
+| 70 | Lisp           |
+| 72 | C11            |
+| 75 | Zig            |
+| 76 | C++20          |
++----+----------------+
+"""
+
+def conv_langs(langs):
+    res = []
+    for l in langs:
+        if l == "procon":
+            res += [2,8,9,13,33,69,76]
+        elif l == "text":
+            res += [51]
+        else:
+            print("Unknown lang",l)
+            exit(-1)
+    return res
 
 pk_base = 1
 def Prob2Stmt(prob):
@@ -16,16 +95,7 @@ def Prob2Stmt(prob):
 	return {
         "fields": {
             "ac_rate": 0.0,
-            "allowed_languages": [
-                3,
-                4,
-                5,
-                6,
-                2,
-                7,
-                1,
-                8
-            ],
+            "allowed_languages": conv_langs(prob.langs),
             "authors": [
                 1
             ],
