@@ -1,11 +1,9 @@
 import random
 
-# print(int(input())+3)
-
 class Problem:
 	def __init__(self):
-		self.id = "instructionless1"
-		self.title = "Instructionless 1"
+		self.id = "instructionless_0"
+		self.title = "Instructionless 0"
 		self.desc = """
 		## Sample Input 1
 		
@@ -49,7 +47,6 @@ class Problem:
 		random.setstate(st)
 		
 		self.problems = probs
-		self.langs = ["procon"]
-
+		
 		
 		
