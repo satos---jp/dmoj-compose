@@ -47,7 +47,7 @@ int main(){
 		printf("\n######################################################\n\n");
 		printf("現在の変換ルール: %s が %s\n",fr,to);
 		printf("1. ルール設定\n2. 変換\n3. ピザチャレンジ\n4. Finish\n> ");
-		scanf("%d",&choice);
+		scanf("%d%*c",&choice);
 		if(choice == 1){
 			printf("ルール: ");
 			memset(fr,0,sizeof(fr));

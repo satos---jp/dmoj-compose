@@ -1,0 +1,25 @@
+archive: instructionless5.zip
+checker: standard
+test_cases:
+- batched:
+  - in: instructionless5.0.in
+    out: instructionless5.0.out
+  - in: instructionless5.1.in
+    out: instructionless5.1.out
+  - in: instructionless5.2.in
+    out: instructionless5.2.out
+  - in: instructionless5.3.in
+    out: instructionless5.3.out
+  - in: instructionless5.4.in
+    out: instructionless5.4.out
+  - in: instructionless5.5.in
+    out: instructionless5.5.out
+  - in: instructionless5.6.in
+    out: instructionless5.6.out
+  - in: instructionless5.7.in
+    out: instructionless5.7.out
+  - in: instructionless5.8.in
+    out: instructionless5.8.out
+  - in: instructionless5.9.in
+    out: instructionless5.9.out
+  points: 20

@@ -49,7 +49,7 @@ class Problem:
 			for j in range(n):
 				l.append(j)
 			
-			probs.append({'in': f'{n}\n{" ".join(l)}', 'out': f'{sum(l)}\n'})
+			probs.append({'in': f'{n}\n{" ".join(map(str,l))}', 'out': f'{sum(l)}\n'})
 		
 		random.setstate(st)
 		

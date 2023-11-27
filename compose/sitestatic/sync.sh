@@ -1,4 +1,7 @@
 set -eux
+
+# WebProblem
+
 rm -r webproblem/
 mkdir webproblem
 
@@ -11,3 +14,14 @@ sed -i 's/ATGT{[^}]*}/#####DELETED#####/' web/init.sql
 
 tar czvf webproblem/dist.tar.gz web/
 rm -r web
+
+# PwnProblem
+
+rm -r pwnproblem/
+mkdir pwnproblem
+
+mkdir pwn
+cp -r ../pwnproblem/dist/* pwn/
+
+tar czvf pwnproblem/dist.tar.gz pwn/
+rm -r pwn

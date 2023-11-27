@@ -1,0 +1,7 @@
+archive: Pwn.zip
+checker: standard
+test_cases:
+- batched:
+  - in: Pwn.0.in
+    out: Pwn.0.out
+  points: 20

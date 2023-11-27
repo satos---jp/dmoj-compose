@@ -1,0 +1,19 @@
+archive: instructionless2.zip
+checker: standard
+test_cases:
+- batched:
+  - in: instructionless2.0.in
+    out: instructionless2.0.out
+  - in: instructionless2.1.in
+    out: instructionless2.1.out
+  - in: instructionless2.2.in
+    out: instructionless2.2.out
+  - in: instructionless2.3.in
+    out: instructionless2.3.out
+  - in: instructionless2.4.in
+    out: instructionless2.4.out
+  - in: instructionless2.5.in
+    out: instructionless2.5.out
+  - in: instructionless2.6.in
+    out: instructionless2.6.out
+  points: 20

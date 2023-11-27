@@ -4,8 +4,14 @@ SITE="../compose/sitejsondata"
 PROB="../compose/problems"
 
 files = [
-	"sample_esper1",
+    "ctf_pwn",
     "ctf_web",
+    "esper0",
+    "esper1",
+    "esper2",
+    "esper3",
+    "esper4",
+    "esper5",
 	# "aplusb",
 ]
 
@@ -95,7 +101,9 @@ def Prob2Stmt(prob):
 	return {
         "fields": {
             "ac_rate": 0.0,
-            "allowed_languages": conv_langs(prob.langs),
+            "allowed_languages": conv_langs(
+                prob.langs if hasattr(prob, 'langs') else ['procon']
+            ),
             "authors": [
                 1
             ],
