@@ -1,6 +1,6 @@
 # Copied from https://github.com/DMOJ/judge-server/blob/master/.docker/tier1/Dockerfile
 
-FROM dmoj/runtimes-tier1
+FROM dmoj/runtimes-tier3
 
 ARG TAG=master
 RUN mkdir /judge /problems && cd /judge && \
@@ -13,7 +13,6 @@ RUN mkdir /judge /problems && cd /judge && \
 	runuser -u judge -w PATH -- /env/bin/dmoj-autoconf -V > /judge-runtime-paths.yml && \
 	echo '  crt_x86_in_lib32: true' >> /judge-runtime-paths.yml
 
-
 # Based on https://github.com/goropikari/dmoj_docker/blob/main/docker/judger/Dockerfile
 
 RUN apt-get update && apt-get upgrade -y && \
@@ -24,6 +23,9 @@ RUN cd /usr/include && \
     git clone https://github.com/atcoder/ac-library && \
     mv ac-library/atcoder .
 
+# For BF
+COPY bf.diff /judge/bf.diff
+RUN patch /judge/dmoj/executors/BF.py /judge/bf.diff
 
 ENTRYPOINT ["/usr/bin/tini", "--", "/judge/.docker/entry"]
 

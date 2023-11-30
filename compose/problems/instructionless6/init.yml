@@ -1,0 +1,11 @@
+archive: instructionless6.zip
+checker: standard
+test_cases:
+- batched:
+  - in: instructionless6.0.in
+    out: instructionless6.0.out
+  - in: instructionless6.1.in
+    out: instructionless6.1.out
+  - in: instructionless6.2.in
+    out: instructionless6.2.out
+  points: 20

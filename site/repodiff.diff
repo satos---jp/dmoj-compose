@@ -535,6 +535,67 @@ index 306d8b5e..0d4f101c 100644
 -        "pk": 1
 -    }
  ]
+diff --git a/judge/forms.py b/judge/forms.py
+index 87003e56..486031e9 100644
+--- a/judge/forms.py
++++ b/judge/forms.py
+@@ -148,7 +148,7 @@ class DownloadDataForm(Form):
+ 
+ 
+ class ProblemSubmitForm(ModelForm):
+-    source = CharField(max_length=65536, widget=AceWidget(theme='twilight', no_ace_media=True))
++    source = CharField(max_length=131072, widget=AceWidget(theme='twilight', no_ace_media=True))
+     judge = ChoiceField(choices=(), widget=forms.HiddenInput(), required=False)
+ 
+     def __init__(self, *args, judge_choices=(), **kwargs):
+@@ -243,7 +243,7 @@ class TwoFactorLoginForm(TOTPForm):
+     def clean(self):
+         totp_or_scratch_code = self.cleaned_data.get('totp_or_scratch_code')
+         if self.profile.is_webauthn_enabled and self.cleaned_data.get('webauthn_response'):
+-            if len(self.cleaned_data['webauthn_response']) > 65536:
++            if len(self.cleaned_data['webauthn_response']) > 131072:
+                 raise ValidationError(_('Invalid WebAuthn response.'))
+ 
+             if not self.webauthn_challenge:
+diff --git a/judge/migrations/0001_squashed_0084_contest_formats.py b/judge/migrations/0001_squashed_0084_contest_formats.py
+index 22aa6597..3e9c6f98 100644
+--- a/judge/migrations/0001_squashed_0084_contest_formats.py
++++ b/judge/migrations/0001_squashed_0084_contest_formats.py
+@@ -523,7 +523,7 @@ class Migration(migrations.Migration):
+                 ('time', models.FloatField(db_index=True, null=True, verbose_name='execution time')),
+                 ('memory', models.FloatField(null=True, verbose_name='memory usage')),
+                 ('points', models.FloatField(db_index=True, null=True, verbose_name='points granted')),
+-                ('source', models.TextField(max_length=65536, verbose_name='source code')),
++                ('source', models.TextField(max_length=131072, verbose_name='source code')),
+                 ('status', models.CharField(choices=[('QU', 'Queued'), ('P', 'Processing'), ('G', 'Grading'), ('D', 'Completed'), ('IE', 'Internal Error'), ('CE', 'Compile Error'), ('AB', 'Aborted')], db_index=True, default='QU', max_length=2, verbose_name='status')),
+                 ('result', models.CharField(blank=True, choices=[('AC', 'Accepted'), ('WA', 'Wrong Answer'), ('TLE', 'Time Limit Exceeded'), ('MLE', 'Memory Limit Exceeded'), ('OLE', 'Output Limit Exceeded'), ('IR', 'Invalid Return'), ('RTE', 'Runtime Error'), ('CE', 'Compile Error'), ('IE', 'Internal Error'), ('SC', 'Short circuit'), ('AB', 'Aborted')], db_index=True, default=None, max_length=3, null=True, verbose_name='result')),
+                 ('error', models.TextField(blank=True, null=True, verbose_name='compile errors')),
+diff --git a/judge/migrations/0085_submission_source.py b/judge/migrations/0085_submission_source.py
+index 5bfa72ac..24df3b06 100644
+--- a/judge/migrations/0085_submission_source.py
++++ b/judge/migrations/0085_submission_source.py
+@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
+             name='SubmissionSource',
+             fields=[
+                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+-                ('source', models.TextField(max_length=65536, verbose_name='source code')),
++                ('source', models.TextField(max_length=131072, verbose_name='source code')),
+                 ('submission', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='link', to='judge.Submission', verbose_name='associated submission')),
+             ],
+         ),
+diff --git a/judge/models/submission.py b/judge/models/submission.py
+index 5aa6c676..70f1793b 100644
+--- a/judge/models/submission.py
++++ b/judge/models/submission.py
+@@ -261,7 +261,7 @@ class Submission(models.Model):
+ class SubmissionSource(models.Model):
+     submission = models.OneToOneField(Submission, on_delete=models.CASCADE, verbose_name=_('associated submission'),
+                                       related_name='source')
+-    source = models.TextField(verbose_name=_('source code'), max_length=65536)
++    source = models.TextField(verbose_name=_('source code'), max_length=131072)
+ 
+     def __str__(self):
+         return _('Source of %(submission)s') % {'submission': self.submission}
 diff --git a/judge/views/register.py b/judge/views/register.py
 index f5cdd640..253c2708 100644
 --- a/judge/views/register.py
@@ -576,3 +637,18 @@ index db098fab..088a38b4 100644
  django_compressor>=3
  django-mptt>=0.13
  django-pagedown<2
+diff --git a/templates/problem/submit.html b/templates/problem/submit.html
+index 892a9183..6cf3dc1a 100644
+--- a/templates/problem/submit.html
++++ b/templates/problem/submit.html
+@@ -114,8 +114,8 @@
+                 }).resize();
+ 
+                 $('#problem_submit').submit(function (event) {
+-                    if ($('#id_source').val().length > 65536) {
+-                        alert("{{ _('Your source code must contain at most 65536 characters.') }}");
++                    if ($('#id_source').val().length > 131072) {
++                        alert("{{ _('Your source code must contain at most 131072 characters.') }}");
+                         event.preventDefault();
+                         $('#problem_submit').find(':submit').attr('disabled', false);
+                     }

@@ -6,21 +6,20 @@ RUN apt-get update && \
             xinetd \
             iproute2
 
-# RUN apt-get install -y gcc vim 
-
-# RUN apt-get install -y gdb
-
 RUN groupadd -r user && useradd -r -g user user
+
+RUN groupadd -r iknowgenchi && useradd -r -g iknowgenchi iknowgenchi
 
 COPY --chown=root:user ./build/start.sh /home/user/start.sh
 COPY --chown=root:root ./build/ctf.conf /etc/xinetd.d/ctf
 COPY --chown=root:user ./build/flag /home/user/flag
 COPY --chown=root:user ./dist/hagaki_henkan /home/user/hagaki_henkan
-# COPY --chown=root:user ./dist/main.c /home/user/main.c
 
-# COPY --chown=root:user ./dist/libc.so.6 /home/user/libc.so.6
+COPY --chown=root:user ./build/genchi.png /home/iknowgenchi/genchi.png
 
-# COPY --chown=root:user ./cmd.sh /home/user/cmd.sh
+WORKDIR /home/user
+
+RUN chmod 400 ./genchi.png
 
 WORKDIR /home/user
 

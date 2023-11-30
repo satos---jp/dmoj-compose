@@ -6,12 +6,15 @@ PROB="../compose/problems"
 files = [
     "ctf_pwn",
     "ctf_web",
+    "ctf_rev",
     "esper0",
     "esper1",
     "esper2",
     "esper3",
     "esper4",
     "esper5",
+    "esper6",
+    "esper7",
 	# "aplusb",
 ]
 
@@ -89,6 +92,8 @@ def conv_langs(langs):
             res += [2,8,9,13,33,69,76]
         elif l == "text":
             res += [51]
+        elif l == "BF":
+            res += [30]
         else:
             print("Unknown lang",l)
             exit(-1)
