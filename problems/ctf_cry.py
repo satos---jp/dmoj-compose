@@ -1,6 +1,6 @@
 class Problem:
 	def __init__(self):
-		self.id = "Crypto"
+		self.id = "_Crypto"
 		self.title = "Crypto"
 		self.desc = """
 	

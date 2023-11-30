@@ -129,7 +129,7 @@ def Prob2Stmt(prob):
             "name": prob.title,
             "og_image": "",
             "partial": True,
-            "points": 5.0,
+            "points": 10.0,
             "short_circuit": False,
             "summary": "",
             "testers": [],
@@ -153,7 +153,7 @@ def problem2init(prob):
 		'checker': 'standard',
 		'test_cases': [{
 			'batched': batch,
-			'points': 20
+			'points': 10
 		}],
 	})
 

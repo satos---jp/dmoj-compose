@@ -1,0 +1,7 @@
+archive: _Rev.zip
+checker: standard
+test_cases:
+- batched:
+  - in: _Rev.0.in
+    out: _Rev.0.out
+  points: 10

@@ -87,7 +87,7 @@
     },
     {
         "fields": {
-            "name": "ExampleJudge",
+            "name": "Judge",
             "auth_key": "azrJwgc8tFNjivAbnIDMGIzWDr5fcbdRx7L8gAdnwXXkBLBQXgIbo5BTUaE5lFnDyBfGzw9LaXjG0kteduEQaKul9rUaoNcd",
             "created": "2000-01-01T00:00:00.000Z"
         },

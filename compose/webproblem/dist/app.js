@@ -89,7 +89,7 @@ fastify.post('/webproblem/', async (request, res) => {
 			);
 			connection.release();
 			
-			const required = 10; 
+			const required = 100; 
 			if(!Number.isInteger(point.points) || point.points < required){
 				session.result = `You need ${required} point to post messages. (You have ${point.points} point now.)`;
 			}else{

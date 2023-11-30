@@ -346,6 +346,23 @@ index 00000000..116bc4ae
 +# You may add whatever django configuration you would like here.
 +# Do try to keep it separate so you can quickly patch in new settings.
 +DMOJ_PROBLEM_DATA_ROOT = "/home/ubuntu/problems"
+diff --git a/dmoj/settings.py b/dmoj/settings.py
+index a08bbd8d..e622693b 100644
+--- a/dmoj/settings.py
++++ b/dmoj/settings.py
+@@ -44,9 +44,9 @@ DMOJ_2FA_HARDCORE = False
+ DMOJ_SSL = 0
+ 
+ # Refer to https://dmoj.ca/post/103-point-system-rework
+-DMOJ_PP_STEP = 0.95
+-DMOJ_PP_ENTRIES = 100
+-DMOJ_PP_BONUS_FUNCTION = lambda n: 300 * (1 - 0.997 ** n)  # noqa: E731
++DMOJ_PP_STEP = 1.0
++DMOJ_PP_ENTRIES = 1000
++DMOJ_PP_BONUS_FUNCTION = lambda n: 0
+ 
+ ACE_URL = '//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3'
+ SELECT2_JS_URL = '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js'
 diff --git a/gen_diff.sh b/gen_diff.sh
 new file mode 100755
 index 00000000..94f6d74a

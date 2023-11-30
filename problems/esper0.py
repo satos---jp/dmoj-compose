@@ -2,7 +2,7 @@ import random
 
 class Problem:
 	def __init__(self):
-		self.id = "instructionless_0"
+		self.id = "instructionless0"
 		self.title = "Instructionless 0"
 		self.desc = """
 		## Sample Input 1

@@ -22,4 +22,4 @@ test_cases:
     out: instructionless5.8.out
   - in: instructionless5.9.in
     out: instructionless5.9.out
-  points: 20
+  points: 10

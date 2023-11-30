@@ -1,7 +1,0 @@
-archive: Rev.zip
-checker: standard
-test_cases:
-- batched:
-  - in: Rev.0.in
-    out: Rev.0.out
-  points: 20

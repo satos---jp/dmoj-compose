@@ -1,0 +1,7 @@
+archive: _Web.zip
+checker: standard
+test_cases:
+- batched:
+  - in: _Web.0.in
+    out: _Web.0.out
+  points: 10

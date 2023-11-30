@@ -65,7 +65,7 @@ services:
   #   environment:
   #     - PROBLEM_PATH=/home/judge/problems
   #     - SITE_HOST=localhost
-  #     - JUDGE_NAME=ExampleJudge
+  #     - JUDGE_NAME=Judge
   #     - JUDGE_KEY=azrJwgc8tFNjivAbnIDMGIzWDr5fcbdRx7L8gAdnwXXkBLBQXgIbo5BTUaE5lFnDyBfGzw9LaXjG0kteduEQaKul9rUaoNcd
   #   depends_on:
   #     - web

@@ -1,6 +1,6 @@
 class Problem:
 	def __init__(self):
-		self.id = "Pwn"
+		self.id = "_Pwn"
 		self.title = "Pwn"
 		self.desc = """\
 		
