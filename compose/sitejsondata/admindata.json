@@ -65,10 +65,10 @@
             "authors": [
                 1
             ],
-            "content": "`atgt2023wh4kk44m3.xyz`以外のサーバに対する不正アクセスは行わないでください。\n\nまた`atgt2023wh4kk44m3.xyz`に対するDOSは困るのでやめてください。",
+            "content": "`atgt2023wh4kk44m3.xyz`以外のサーバに対する不正アクセスは行わないでください。\n\nまた`atgt2023wh4kk44m3.xyz`に対するDOSは困るのでやめてください。\n\nSanity Checkのフラグは`ATGT{Now_you_can_say_you've_played_CTF_before!}`です。",
             "og_image": "",
             "publish_on": "2000-01-01T00:00:00Z",
-            "slug": "first-post",
+            "slug": "notice",
             "sticky": true,
             "summary": "",
             "title": "注意事項",
