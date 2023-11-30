@@ -4,6 +4,7 @@ SITE="../compose/sitejsondata"
 PROB="../compose/problems"
 
 files = [
+    "ctf_sanity_check",
     "ctf_pwn",
     "ctf_web",
     "ctf_rev",

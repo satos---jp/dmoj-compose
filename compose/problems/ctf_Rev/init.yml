@@ -1,0 +1,7 @@
+archive: ctf_Rev.zip
+checker: standard
+test_cases:
+- batched:
+  - in: ctf_Rev.0.in
+    out: ctf_Rev.0.out
+  points: 10

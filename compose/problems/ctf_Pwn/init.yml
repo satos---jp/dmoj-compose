@@ -1,0 +1,7 @@
+archive: ctf_Pwn.zip
+checker: standard
+test_cases:
+- batched:
+  - in: ctf_Pwn.0.in
+    out: ctf_Pwn.0.out
+  points: 10
