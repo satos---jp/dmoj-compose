@@ -9,17 +9,18 @@ RUN apt-get update && \
 RUN groupadd -r user && useradd -r -g user user
 
 RUN groupadd -r iknowgenchi && useradd -r -g iknowgenchi iknowgenchi
+RUN printf "h1rakeg0ma\nh1rakeg0ma\n" | passwd iknowgenchi
 
 COPY --chown=root:user ./build/start.sh /home/user/start.sh
 COPY --chown=root:root ./build/ctf.conf /etc/xinetd.d/ctf
 COPY --chown=root:user ./build/flag /home/user/flag
 COPY --chown=root:user ./dist/hagaki_henkan /home/user/hagaki_henkan
 
-COPY --chown=root:user ./build/genchi.png /home/iknowgenchi/genchi.png
+COPY --chown=iknowgenchi:iknowgenchi ./build/genchi.png /home/iknowgenchi/genchi_nishigawa_bench.png
 
-WORKDIR /home/user
+WORKDIR /home/iknowgenchi
 
-RUN chmod 400 ./genchi.png
+RUN chmod 400 ./genchi_nishigawa_bench.png
 
 WORKDIR /home/user
 

@@ -99,7 +99,7 @@ def conv_langs(langs):
             exit(-1)
     return res
 
-pk_base = 1
+pk_base = 0
 def Prob2Stmt(prob):
 	global pk_base
 	pk_base += 1

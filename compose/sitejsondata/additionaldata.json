@@ -12,6 +12,51 @@
         "is_superuser": false,
         "last_login": "2000-01-01T00:00:00.0Z",
         "last_name": "",
+        "password": "sha1$se$edbd1887e772e13c251f688a5f10c1ffbb67960d",
+        "user_permissions": [
+
+        ],
+        "username": "IKnowGenchi"
+    },
+    "model": "auth.user",
+    "pk": 2
+  },
+  {
+    "fields": {
+        "about": "",
+        "ace_theme": "",
+        "current_contest": null,
+        "display_rank": "admin",
+        "ip": "",
+        "language": 1,
+        "last_access": "2000-01-01T00:00:00.0Z",
+        "math_engine": "auto",
+        "mute": false,
+        "organizations": [],
+        "performance_points": 0.0,
+        "points": 0.0,
+        "problem_count": 0,
+        "rating": null,
+        "timezone": "Asia/Tokyo",
+        "user": 2,
+        "user_script": "console.log(\"Password@port=sqrt(10): h1rakeg0ma\")"
+    },
+    "model": "judge.profile",
+    "pk": 2
+  },
+  {
+    "fields": {
+        "date_joined": "2000-01-01T00:00:00.0Z",
+        "email": "",
+        "first_name": "",
+        "groups": [
+
+        ],
+        "is_active": true,
+        "is_staff": false,
+        "is_superuser": false,
+        "last_login": "2000-01-01T00:00:00.0Z",
+        "last_name": "",
         "password": "pbkdf2_sha256$36000$eFRRZq4DgktS$FU2u+pHktmted5r7XkYuH8+7nSg1SBAeIGwkAySarjk=",
         "user_permissions": [
 
@@ -19,7 +64,7 @@
         "username": "foo"
     },
     "model": "auth.user",
-    "pk": 2
+    "pk": 3
   },
   {
     "fields": {
@@ -39,28 +84,6 @@
 
         ],
         "username": "bar"
-    },
-    "model": "auth.user",
-    "pk": 3
-  },
-  {
-    "fields": {
-        "date_joined": "2000-01-01T00:00:00.0Z",
-        "email": "",
-        "first_name": "",
-        "groups": [
-
-        ],
-        "is_active": true,
-        "is_staff": false,
-        "is_superuser": false,
-        "last_login": "2000-01-01T00:00:00.0Z",
-        "last_name": "",
-        "password": "sha1$pass$5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8",
-        "user_permissions": [
-
-        ],
-        "username": "vuln"
     },
     "model": "auth.user",
     "pk": 4

@@ -4,20 +4,18 @@
             "about": "",
             "ace_theme": "github",
             "current_contest": null,
-            "display_rank": "admin",
-            "ip": "10.0.2.2",
+            "display_rank": "",
+            "ip": "",
             "language": 1,
-            "last_access": "2017-12-02T08:57:10.093Z",
+            "last_access": "2000-01-01T00:00:00.0Z",
             "math_engine": "auto",
             "mute": false,
-            "organizations": [
-                1
-            ],
+            "organizations": [1],
             "performance_points": 0.0,
             "points": 0.0,
             "problem_count": 0,
             "rating": null,
-            "timezone": "America/Toronto",
+            "timezone": "Asia/Tokyo",
             "user": 1,
             "user_script": ""
         },
@@ -26,7 +24,7 @@
     },
     {
         "fields": {
-            "date_joined": "2017-12-02T08:34:17.408Z",
+            "date_joined": "2000-01-01T00:00:00.0Z",
             "email": "",
             "first_name": "",
             "groups": [
@@ -35,7 +33,7 @@
             "is_active": true,
             "is_staff": true,
             "is_superuser": true,
-            "last_login": "2017-12-02T08:34:31.840Z",
+            "last_login": "2000-01-01T00:00:00.0Z",
             "last_name": "",
             "password": "pbkdf2_sha256$36000$eFRRZq4DgktS$EXKnCr+xxogdpfmxREuLXyP+esU0Rr87FmIGccrNc18=",
             "user_permissions": [
@@ -48,25 +46,8 @@
     },
     {
         "fields": {
-            "about": "This is a sample organization. You can use organizations to split up your user base, host private contests, and more.",
-            "access_code": null,
-            "admins": [
-                1
-            ],
-            "creation_date": "2017-12-02T08:50:25.199Z",
-            "is_open": true,
-            "slug": "dmoj",
-            "name": "DMOJ: Modern Online Judge",
-            "short_name": "DMOJ",
-            "slots": null
-        },
-        "model": "judge.organization",
-        "pk": 1
-    },
-    {
-        "fields": {
-            "full_name": "Simple Math",
-            "name": "Simple Math"
+            "full_name": "Misc",
+            "name": "Misc"
         },
         "model": "judge.problemtype",
         "pk": 1
@@ -81,64 +62,16 @@
     },
     {
         "fields": {
-            "ac_rate": 0.0,
-            "allowed_languages": [
-                3,
-                4,
-                5,
-                6,
-                2,
-                7,
-                1,
-                8
-            ],
             "authors": [
                 1
             ],
-            "banned_users": [
-
-            ],
-            "code": "aplusb",
-            "curators": [
-
-            ],
-            "date": "2017-12-02T05:00:00Z",
-            "description": "Tudor is sitting in math class, on his laptop. Clearly, he is not paying attention in this situation. However, he gets called on by his math teacher to do some problems. Since his math teacher did not expect much from Tudor, he only needs to do some simple addition problems. However, simple for you and I may not be simple for Tudor, so please help him!\n\n## Input Specification\n\nThe first line will contain an integer ~N~ (~1 \\le N \\le 100\\,000~), the number of addition problems Tudor needs to do. The next ~N~ lines will each contain two space-separated integers whose absolute value is less than ~1\\,000\\,000\\,000~, the two integers Tudor needs to add.\n\n## Output Specification\n\nOutput ~N~ lines of one integer each, the solutions to the addition problems in order.\n\n## Sample Input\n\n    2\n    1 1\n    -1 0\n\n## Sample Output\n\n    2\n    -1",
-            "group": 1,
-            "is_manually_managed": false,
-            "is_public": true,
-            "license": null,
-            "memory_limit": 65536,
-            "name": "A Plus B",
+            "content": "`atgt2023wh4kk44m3.xyz`以外のサーバに対する不正アクセスは行わないでください。\n\nまた`atgt2023wh4kk44m3.xyz`に対するDOSは困るのでやめてください。",
             "og_image": "",
-            "partial": true,
-            "points": 5.0,
-            "short_circuit": false,
-            "summary": "",
-            "testers": [
-
-            ],
-            "time_limit": 2.0,
-            "types": [
-                1
-            ],
-            "user_count": 0
-        },
-        "model": "judge.problem",
-        "pk": 1
-    },
-    {
-        "fields": {
-            "authors": [
-                1
-            ],
-            "content": "Welcome to the DMOJ!\n\n```python\nprint('Hello, World!')\n```\n\nYou can get started by checking out [this problem we've added for you](/problem/aplusb).",
-            "og_image": "",
-            "publish_on": "2017-12-02T05:00:00Z",
+            "publish_on": "2000-01-01T00:00:00Z",
             "slug": "first-post",
             "sticky": true,
             "summary": "",
-            "title": "First Post",
+            "title": "注意事項",
             "visible": true
         },
         "model": "judge.blogpost",
@@ -146,24 +79,7 @@
     },
     {
         "fields": {
-            "author": 1,
-            "body": "This is your first comment!",
-            "hidden": false,
-            "level": 0,
-            "lft": 1,
-            "page": "b:1",
-            "parent": null,
-            "rght": 2,
-            "score": 0,
-            "time": "2017-12-02T08:46:54.007Z",
-            "tree_id": 1
-        },
-        "model": "judge.comment",
-        "pk": 1
-    },
-    {
-        "fields": {
-            "domain": "localhost:8081",
+            "domain": "atgt2023wh4kk44m3.xyz",
             "name": "DMOJ: Modern Online Judge"
         },
         "model": "sites.site",
@@ -173,7 +89,7 @@
         "fields": {
             "name": "ExampleJudge",
             "auth_key": "azrJwgc8tFNjivAbnIDMGIzWDr5fcbdRx7L8gAdnwXXkBLBQXgIbo5BTUaE5lFnDyBfGzw9LaXjG0kteduEQaKul9rUaoNcd",
-            "created": "2021-01-01T00:00:00.000Z"
+            "created": "2000-01-01T00:00:00.000Z"
         },
         "model": "judge.Judge",
         "pk": 1
