@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+		<title>Crypto Problem</title>
+	</head>
+	<body>
+		<% const data = `[${problem.encrypted.join(",")}]`; %>
+		<div> Encrypted data: <%= data %> </div>
+		<form id="guessform" method="POST">
+			<input name="guess" type="text" placeholder="0123456789">
+			<button type="submit">Guess</button>
+		</form>
+		<div> Result </div>
+		<div> <%= result %> </div>
+	</body>
+</html>

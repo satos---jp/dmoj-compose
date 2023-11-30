@@ -47,6 +47,12 @@ services:
     depends_on:
       - db
 
+  cryproblem:
+    restart: always
+    build: ./cryproblem/
+    volumes:
+      - ./cryproblem/src/supervisord.conf:/etc/supervisord.conf:ro
+
   # judger:
   #   image: satosjp/dmoj-judger
   #   restart: always
