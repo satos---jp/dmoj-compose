@@ -13,10 +13,23 @@
 			<button type="submit">ログイン</button>
 		</form>
 		<div> <%= result %> </div>
-		<form id="" method="POST">
+		<form id="tsubuyakiform" method="POST">
 			<input name="postMessage" type="text" placeholder="あんたがたなう">
+			<input type="checkbox" id="ispublic" name="ispublic" value="public">
+			<label for="ispublic">公開</label>
 			<button type="submit">つぶやく</button>
 		</form>
-		<%- hof %>
+		<table>
+			<tr>
+				<th>名前</th>
+				<th>つぶやき</th>
+			</tr>
+			<% for(let i = 0; i < tsubuyaki_list.length; i++){ %>
+			<tr>
+				<td><%= tsubuyaki_list[i].name %></td>
+				<td><%= tsubuyaki_list[i].msg %></td>
+			</tr>
+			<% } %>
+		</table>
 	</body>
 </html>

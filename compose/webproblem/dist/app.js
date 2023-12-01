@@ -21,26 +21,16 @@ fastify.register(require('@fastify/mysql'), {
 
 const sessions = new Map();
 
-async function get_hall_of_fame(nid){
+async function get_tsubuyaki_list(){
 	const connection = await fastify.mysql.getConnection();
 	const [data] = await connection.query(
-		`select id, name, msg from dmoj.hall_of_fame`, []
+		`select name, ispublic, msg from dmoj.tsubuyaki`, []
 	);
 	connection.release();
-	return `<table>
-		<tr>
-			<th>名前</th>
-			<th>メッセージ</th>
-		</tr>
-	${data.map(({id, name, msg}) => {
-		return `<tr>
-			<td>${name}</td>
-			<td>${id === nid ? msg : "*".repeat(msg.length)}</td>
-		</tr>
-		`;
-	}).join("\n")}
-	</table>
-	`;
+	return data.map(({name, ispublic, msg}) => ({
+		name,
+		msg: ispublic === 1 ? msg : "*".repeat(msg.length),
+	}));
 }
 
 fastify.get('/webproblem/', async (request, res) => {
@@ -48,8 +38,8 @@ fastify.get('/webproblem/', async (request, res) => {
 		sessions.set(request.session.sessionId, {id: NaN, username: "", result: ""});
 	}
 	const session = sessions.get(request.session.sessionId);
-	const hof = await get_hall_of_fame(session.id);
-	return res.view("index.ejs", {hof,...session});
+	const tsubuyaki_list = await get_tsubuyaki_list();
+	return res.view("index.ejs", {tsubuyaki_list,...session});
 });
 
 fastify.post('/webproblem/', async (request, res) => {
@@ -89,13 +79,14 @@ fastify.post('/webproblem/', async (request, res) => {
 			);
 			connection.release();
 			
-			const required = 110; 
+			const required = 10; 
 			if(!Number.isInteger(point.points) || point.points < required){
-				session.result = `つぶやくには ${required} 点以上獲得してください。(あなたはの得点は現在 ${point.points} 点です)`;
+				session.result = `つぶやくには ${required} 点以上獲得してください。(あなたの現在の得点は ${point.points} 点です)`;
 			}else{
 				const connection = await fastify.mysql.getConnection();
+				const ispublic = request.body.ispublic === "public";
 				await connection.query(
-					`insert into dmoj.hall_of_fame value (${session.id},"${session.username}","${request.body.postMessage}")`, []
+					`insert into dmoj.tsubuyaki value ("${session.username}",${ispublic ? 1 : 0},"${request.body.postMessage}")`, []
 				);
 				connection.release();
 				session.result = `つぶやきました。`;
@@ -103,8 +94,8 @@ fastify.post('/webproblem/', async (request, res) => {
 		}
 	}
 
-	const hof = await get_hall_of_fame(session.id);
-	return res.view("index.ejs", {hof,...session});
+	const tsubuyaki_list = await get_tsubuyaki_list();
+	return res.view("index.ejs", {tsubuyaki_list,...session});
 });
 
 fastify.listen(30000, '0.0.0.0');
