@@ -24,12 +24,12 @@ const sessions = new Map();
 async function get_tsubuyaki_list(){
 	const connection = await fastify.mysql.getConnection();
 	const [data] = await connection.query(
-		`select name, ispublic, msg from dmoj.tsubuyaki`, []
+		`select name, isprivate, msg from dmoj.tsubuyaki`, []
 	);
 	connection.release();
-	return data.map(({name, ispublic, msg}) => ({
+	return data.map(({name, isprivate, msg}) => ({
 		name,
-		msg: ispublic === 1 ? msg : "*".repeat(msg.length),
+		msg: isprivate === 0 ? msg : "*".repeat(msg.length),
 	}));
 }
 
@@ -79,14 +79,14 @@ fastify.post('/webproblem/', async (request, res) => {
 			);
 			connection.release();
 			
-			const required = 10; 
+			const required = 130; 
 			if(!Number.isInteger(point.points) || point.points < required){
 				session.result = `つぶやくには ${required} 点以上獲得してください。(あなたの現在の得点は ${point.points} 点です)`;
 			}else{
 				const connection = await fastify.mysql.getConnection();
-				const ispublic = request.body.ispublic === "public";
+				const isprivate = request.body.isprivate === "private";
 				await connection.query(
-					`insert into dmoj.tsubuyaki value ("${session.username}",${ispublic ? 1 : 0},"${request.body.postMessage}")`, []
+					`insert into dmoj.tsubuyaki value ("${session.username}",${isprivate ? 1 : 0},"${request.body.postMessage}")`, []
 				);
 				connection.release();
 				session.result = `つぶやきました。`;

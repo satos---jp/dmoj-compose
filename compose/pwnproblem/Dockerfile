@@ -16,13 +16,11 @@ COPY --chown=root:root ./build/ctf.conf /etc/xinetd.d/ctf
 COPY --chown=root:user ./build/flag /home/user/flag
 COPY --chown=root:user ./dist/hagaki_henkan /home/user/hagaki_henkan
 
-COPY --chown=iknowgenchi:iknowgenchi ./build/genchi.png /home/iknowgenchi/genchi_nishigawa_bench.png
-
-WORKDIR /home/iknowgenchi
-
-RUN chmod 400 ./genchi_nishigawa_bench.png
+COPY --chown=iknowgenchi:iknowgenchi ./build/genchi.png /home/user/flag_genchi_bench.png
 
 WORKDIR /home/user
+
+RUN chmod 400 ./flag_genchi_bench.png
 
 RUN chmod 444 ./flag && \
     chmod 555 ./hagaki_henkan && \
