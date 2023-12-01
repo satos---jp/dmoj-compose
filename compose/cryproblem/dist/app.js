@@ -1,6 +1,5 @@
 const crypto = require("node:crypto");
 const fs = require("fs");
-const { resolveSoa } = require("node:dns");
 const fastify = require('fastify')();
 
 fastify.register(require('@fastify/cookie'));
@@ -91,4 +90,4 @@ fastify.post('/cryptoproblem_DH/', async (request, res) => {
 	return res.view("index.ejs", {desc: ProblemtoDesc(session.problem), ...session});
 });
 
-fastify.listen(24567, '0.0.0.0');
+fastify.listen(24494, '0.0.0.0');

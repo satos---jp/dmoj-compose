@@ -1,0 +1,7 @@
+archive: ctf_Crypto2.zip
+checker: standard
+test_cases:
+- batched:
+  - in: ctf_Crypto2.0.in
+    out: ctf_Crypto2.0.out
+  points: 10

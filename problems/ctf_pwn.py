@@ -8,7 +8,7 @@ class Problem:
 
 		このプログラムのバグを突いてflagファイルの中身を覗きましょう。
 
-		プログラムのバイナリとそのソースコードは [dist.tar.gz](../../static/atgtstaticdata/pwnproblem/dist.tar.gz)からダウンロードできます。
+		プログラムのバイナリとそのソースコードは [pwn.zip](../../static/atgtstaticdata/pwnproblem/pwn.zip) からダウンロードできます。
 
 		フラグ(flagファイルの中身)の形式は`ATGT{[^}]*}`です。
 

@@ -12,7 +12,7 @@ cp ../db_after_dmoj/init.sql web/
 sed -i 's/mysql:\/\/webp:.*@db/#####DELETED#####/' web/app.js
 sed -i 's/ATGT{[^}]*}/#####DELETED#####/' web/init.sql
 
-tar czvf webproblem/dist.tar.gz web/
+zip -r webproblem/web.zip web/
 rm -r web
 
 # PwnProblem
@@ -23,5 +23,25 @@ mkdir pwnproblem
 mkdir pwn
 cp -r ../pwnproblem/dist/* pwn/
 
-tar czvf pwnproblem/dist.tar.gz pwn/
+zip -r pwnproblem/pwn.zip pwn/
 rm -r pwn
+
+# CryProblems
+
+rm -r cryptoproblem1/
+mkdir cryptoproblem1/
+
+mkdir crypto1
+cp -r ../cryproblem/dist/* crypto1/
+
+zip -r cryptoproblem1/crypto1.zip crypto1/
+rm -r crypto1
+
+rm -r cryptoproblem2/
+mkdir cryptoproblem2/
+
+mkdir crypto2
+cp -r ../cryproblem/dist2/* crypto2/
+
+zip -r cryptoproblem2/crypto2.zip crypto2/
+rm -r crypto2

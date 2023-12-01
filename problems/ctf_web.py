@@ -6,7 +6,7 @@ class Problem:
 
     Webページ [webproblem/](../../webproblem/) に行き、最初に投稿されたflagさんのメッセージを盗みとりましょう。
 
-    Webサーバーのソースコードとデータベースの初期化に使ったデータは [dist.tar.gz](../../static/atgtstaticdata/webproblem/dist.tar.gz)からダウンロードできます。
+    Webサーバーのソースコードとデータベースの初期化に使ったデータは [web.zip](../../static/atgtstaticdata/webproblem/web.zip) からダウンロードできます。
 
     フラグ(flagさんのメッセージ)の形式は`ATGT{[^}]*}`です。
 

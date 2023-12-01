@@ -8,6 +8,8 @@ files = [
     "ctf_pwn",
     "ctf_web",
     "ctf_rev",
+    "ctf_cry1",
+    "ctf_cry2",
     "esper0",
     "esper1",
     "esper2",
