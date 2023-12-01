@@ -35,33 +35,49 @@ function modpow(a,x,n){ // return (a ** x) % n;
 	return res;
 }
 
-const n = BigInt(fs.readFileSync("/root/data/N").toString());
-const secret1 = buffer_to_bigint(fs.readFileSync("/root/data/flag"));
-const secret2 = buffer_to_bigint(fs.readFileSync("/root/data/FLAG"));
+function modinv(a,n){ // return b where a * b % n === 1
+	return modpow(a,n-2n,n);
+}
 
-function generateProblem(a){
+const key = {
+	n: BigInt(fs.readFileSync("/root/data/N").toString()),
+	g: BigInt(fs.readFileSync("/root/data/G").toString()),
+	x: buffer_to_bigint(fs.readFileSync("/root/data/FLAG")),
+};
+key.h = modpow(key.g,key.x,key.n);
+
+function encrypt(m){
+	const r = buffer_to_bigint(crypto.randomBytes(15));
 	return {
-		a,
-		ax: modpow(a,secret1,n),
-		ay: modpow(a,secret2,n),
-		axy: modpow(a,secret1*secret2,n)
+		m,
+		c1: modpow(key.g, r, key.n),
+		c2: (m * modpow(key.h, r, key.n)) % key.n,
 	}
+}
+
+function decrypt(c){
+	return (c.c2 * modinv(modpow(c.c1,key.x,key.n),key.n) % key.n);
 }
 
 function generateRandomProblem(){
 	const a = buffer_to_bigint(crypto.randomBytes(15));
-	return generateProblem(a);
+	return encrypt(a);
 }
 
 function ProblemtoDesc(problem){
-	return `以下の情報からa^xyを当ててください。
-n = ${n}
-a = ${problem.a}
-a^x = ${problem.ax}
-a^y = ${problem.ay}`;
+	return `以下の情報から暗号化されたmを当ててください。
+key={
+	n: ${key.n},
+	g: ${key.g},
+	h: ${key.h},
+}
+c={
+	c1: ${problem.c1},
+	c2: ${problem.c2},
+}`;
 }
 
-fastify.get('/cryptoproblem_DH/', async (request, res) => {
+fastify.get('/cryptoproblem_EG/', async (request, res) => {
 	if (!sessions.has(request.session.sessionId)) {
 		sessions.set(request.session.sessionId, {problem: generateRandomProblem(), result: ""});
 	}
@@ -69,26 +85,23 @@ fastify.get('/cryptoproblem_DH/', async (request, res) => {
 	return res.view("index.ejs", {desc: ProblemtoDesc(session.problem), ...session});
 });
 
-fastify.post('/cryptoproblem_DH/', async (request, res) => {
+fastify.post('/cryptoproblem_EG/', async (request, res) => {
 	if (!sessions.has(request.session.sessionId)) {
 		sessions.set(request.session.sessionId, {problem: generateRandomProblem(), result: ""});
 	}
 	const session = sessions.get(request.session.sessionId);
 	if(request.body.guess){
 		const problem = session.problem;
-		if(request.body.guess === String(problem.axy)){
-			const flag = fs.readFileSync("/root/data/flag").toString();
+		const m = decrypt(problem);
+		if(request.body.guess === String(m)){
+			const flag = fs.readFileSync("/root/data/FLAG").toString();
 			session.result = `推測成功！ フラグは ${flag} です。`;
 		}else{
-			session.result = `推測失敗... 正解は ${String(problem.axy)} でした。`;
+			session.result = `推測失敗... 正解は ${String(m)} でした。`;
 			session.problem = generateRandomProblem();
 		}
-	}else if(request.body.try){
-		const a = BigInt(request.body.try);
-		const problem = generateProblem(a);
-		session.result = `問題生成結果:\n${ProblemtoDesc(problem)}`;
 	}
 	return res.view("index.ejs", {desc: ProblemtoDesc(session.problem), ...session});
 });
 
-fastify.listen(24567, '0.0.0.0');
+fastify.listen(25678, '0.0.0.0');

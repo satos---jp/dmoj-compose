@@ -1,0 +1,11 @@
+version: "3"
+services:
+  cryproblem:
+    restart: always
+    build: ./
+    volumes:
+      - ./src/supervisord.conf:/etc/supervisord.conf:ro
+    ports:
+      - 25678:25678
+      - 24567:24567
+

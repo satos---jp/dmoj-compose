@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-		<title>Diffie-Hellman Crypto Problem</title>
+		<title>ElGamal Crypto Problem</title>
 	</head>
 	<body>
 		<pre>問題: <%= desc %></pre>
@@ -10,10 +10,6 @@
 			<input name="guess" type="text" placeholder="0123456789">
 			<button type="submit">推測</button>
 		</form>
-		<form id="tryform" method="POST">
-			<input name="try" type="text" placeholder="0123456789">
-			<button type="submit">生成</button>
-		</form>
-		<pre><%= result %></pre>
+		<pre> <%= result %> </pre>
 	</body>
 </html>
