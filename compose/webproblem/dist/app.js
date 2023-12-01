@@ -29,8 +29,8 @@ async function get_hall_of_fame(nid){
 	connection.release();
 	return `<table>
 		<tr>
-			<th>Name</th>
-			<th>Message</th>
+			<th>名前</th>
+			<th>メッセージ</th>
 		</tr>
 	${data.map(({id, name, msg}) => {
 		return `<tr>
@@ -45,7 +45,7 @@ async function get_hall_of_fame(nid){
 
 fastify.get('/webproblem/', async (request, res) => {
 	if (!sessions.has(request.session.sessionId)) {
-		sessions.set(request.session.sessionId, {id: NaN, username: "Not Logged in", result: ""});
+		sessions.set(request.session.sessionId, {id: NaN, username: "", result: ""});
 	}
 	const session = sessions.get(request.session.sessionId);
 	const hof = await get_hall_of_fame(session.id);
@@ -54,7 +54,7 @@ fastify.get('/webproblem/', async (request, res) => {
 
 fastify.post('/webproblem/', async (request, res) => {
 	if (!sessions.has(request.session.sessionId)) {
-		sessions.set(request.session.sessionId, {id: NaN, username: "Not Logged in", result: ""});
+		sessions.set(request.session.sessionId, {id: NaN, username: "", result: ""});
 	}
 	const session = sessions.get(request.session.sessionId);
 	if(request.body.username && request.body.password){
@@ -66,22 +66,22 @@ fastify.post('/webproblem/', async (request, res) => {
 		rows.forEach(({id, password}) => {
 			const hash = password.split('$');
 			if(hash[0] !== 'pbkdf2_sha256'){
-				session.result = `Unknown Hash method: ${hash[0]}`;
+				session.result = `不明なハッシュ関数: ${hash[0]}`;
 				return;	
 			}
 			const [_,n,salt,h] = hash;
 			const th = crypto.pbkdf2Sync(request.body.password,salt,parseInt(n),32,'sha256').toString('base64');
 			if(th !== h){
-				session.result = `Password check failed.`;
+				session.result = `パスワード認証に失敗しました。`;
 				return;
 			}
-			session.result = `Login Succeeded.`;
+			session.result = `ログインしました。`;
 			session.username = request.body.username;
 			session.id = id;
 		});
 	}else if(request.body.postMessage){
 		if(isNaN(session.id)){
-			session.result = `Pls Login First`;
+			session.result = `ログインしてください。`;
 		}else{
 			const connection = await fastify.mysql.getConnection();
 			const [[point]] = await connection.query(
@@ -91,14 +91,14 @@ fastify.post('/webproblem/', async (request, res) => {
 			
 			const required = 110; 
 			if(!Number.isInteger(point.points) || point.points < required){
-				session.result = `You need ${required} point to post messages. (You have ${point.points} point now.)`;
+				session.result = `つぶやくには ${required} 点以上獲得してください。(あなたはの得点は現在 ${point.points} 点です)`;
 			}else{
 				const connection = await fastify.mysql.getConnection();
 				await connection.query(
 					`insert into dmoj.hall_of_fame value (${session.id},"${session.username}","${request.body.postMessage}")`, []
 				);
 				connection.release();
-				session.result = `Post succeeded.`;
+				session.result = `つぶやきました。`;
 			}
 		}
 	}
