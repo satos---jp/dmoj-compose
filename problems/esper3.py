@@ -7,17 +7,17 @@ class Problem:
 		self.desc = """
 		## Sample Input 1
 		
-		    1 0 0
+		    2 4 5
 		
 		
 		## Sample Output 1
 		
-		    1
+		    0
 		
 		
 		## Sample Input 2
 		
-		    2 4 5
+		    3 2 2
 		
 		
 		## Sample Output 2
@@ -27,13 +27,41 @@ class Problem:
 		
 		## Sample Input 3
 		
-		    1 6 8
+		    1 0 0
 		
 		
 		## Sample Output 3
 		
+		    1
+		
+		## Sample Input 4
+		
+		    9 6 1
+		
+		
+		## Sample Output 4
+		
+		    1
+		
+		
+		## Sample Input 5
+		
+		    1 6 8
+		
+		
+		## Sample Output 5
+		
 		    2
 		
+		
+		## Sample Input 6
+		
+		    3 2 -2
+		
+		
+		## Sample Output 6
+		
+		    2
 		
 		"""
 		

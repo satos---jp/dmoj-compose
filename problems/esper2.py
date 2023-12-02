@@ -1,13 +1,7 @@
 import random
 
-kaminoku=["mu/","su/","me/","fu/","sa/","ho","se/"]
-shimonoku=["kiritachinohoruakinoyufukure",
-		   "yumenokayohichihitomeyokuramu",
-		   "kumokakurenishiyohanotsukikana",
-		   "muheyamakaseoarashitoifuramu",
-		   "itsukomonashiakinoyufukure",
-		   "tataariakenotsukisonokoreru",
-		   "waretemosueniahamutosomofu"]
+kaminoku=["mu/","su/","me/","hu/","sa/","ho/","se/"]
+shimonoku=["87", "18", "57", "22", "70", "81", "77"]
 
 class Problem:
 	def __init__(self):
@@ -21,17 +15,17 @@ class Problem:
 		
 		## Sample Output 1
 		
-		    kiritachinohoruakinoyufukure
+		    87
 		
 		
 		## Sample Input 2
 		
-		    su/
+		    hu/
 		
 		
 		## Sample Output 2
 		
-		    yumenokayohichihitomeyokuramu
+		    22
 		
 		
 		"""
