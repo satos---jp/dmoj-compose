@@ -31,8 +31,10 @@ services:
     volumes:
       - ./sitejsondata:/home/ubuntu/addedjsondata
       - ./sitestatic:/home/ubuntu/addedstaticdata
+      - ./certificates:/etc/thankscertbot/certificates
     ports:
       - 80:80
+      - 443:443
       - 8000:8000
       - 9999:9999
     depends_on:
