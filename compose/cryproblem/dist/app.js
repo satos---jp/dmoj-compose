@@ -6,7 +6,7 @@ fastify.register(require('@fastify/cookie'));
 fastify.register(require('@fastify/formbody'))
 fastify.register(require('@fastify/session'), {
 	secret: Math.random().toString(2),
-	cookie: {secure: false},
+	cookie: {secure: false, path: "/cryptoproblem_DH/"},
 });
 
 fastify.register(require("@fastify/view"), {
@@ -52,9 +52,8 @@ function generateRandomProblem(){
 	return generateProblem(a);
 }
 
-function ProblemtoDesc(problem){
-	return `以下の情報からa^xyを当ててください。
-n = ${n}
+function problemtoStr(problem){
+	return `n = ${n}
 a = ${problem.a}
 a^x = ${problem.ax}
 a^y = ${problem.ay}`;
@@ -65,7 +64,7 @@ fastify.get('/cryptoproblem_DH/', async (request, res) => {
 		sessions.set(request.session.sessionId, {problem: generateRandomProblem(), result: ""});
 	}
 	const session = sessions.get(request.session.sessionId);
-	return res.view("index.ejs", {desc: ProblemtoDesc(session.problem), ...session});
+	return res.view("index.ejs", {desc: `以下の情報からa^xyを当ててください。\n${problemtoStr(session.problem)}`, ...session});
 });
 
 fastify.post('/cryptoproblem_DH/', async (request, res) => {
@@ -79,15 +78,20 @@ fastify.post('/cryptoproblem_DH/', async (request, res) => {
 			const flag = fs.readFileSync("/root/data/flag").toString();
 			session.result = `推測成功！ フラグは ${flag} です。`;
 		}else{
-			session.result = `推測失敗... 正解は ${String(problem.axy)} でした。`;
+			session.result = `推測失敗...\n${problemtoStr(problem)}\nの正解は ${String(problem.axy)} でした。`;
 			session.problem = generateRandomProblem();
 		}
 	}else if(request.body.try){
-		const a = BigInt(request.body.try);
-		const problem = generateProblem(a);
-		session.result = `問題生成結果:\n${ProblemtoDesc(problem)}`;
+		const s = String(request.body.try);
+		if(s.length > 100){
+			session.result = `入力が長すぎます。`;
+		}else{
+			const a = BigInt(s);
+			const problem = generateProblem(a);
+			session.result = `問題生成結果:\n${problemtoStr(problem)}`;
+		}
 	}
-	return res.view("index.ejs", {desc: ProblemtoDesc(session.problem), ...session});
+	return res.view("index.ejs", {desc: `以下の情報からa^xyを当ててください。\n${problemtoStr(session.problem)}`, ...session});
 });
 
-fastify.listen(24494, '0.0.0.0');
+fastify.listen({port: 24494, host: '0.0.0.0'});

@@ -5,7 +5,7 @@ fastify.register(require('@fastify/cookie'));
 fastify.register(require('@fastify/formbody'))
 fastify.register(require('@fastify/session'), {
 	secret: Math.random().toString(2),
-	cookie: {secure: false},
+	cookie: {secure: false, path: "/webproblem/"},
 });
 
 fastify.register(require("@fastify/view"), {
@@ -98,4 +98,4 @@ fastify.post('/webproblem/', async (request, res) => {
 	return res.view("index.ejs", {tsubuyaki_list,...session});
 });
 
-fastify.listen(30000, '0.0.0.0');
+fastify.listen({port: 30000, host: '0.0.0.0'});

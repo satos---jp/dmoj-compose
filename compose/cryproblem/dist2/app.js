@@ -6,7 +6,7 @@ fastify.register(require('@fastify/cookie'));
 fastify.register(require('@fastify/formbody'))
 fastify.register(require('@fastify/session'), {
 	secret: Math.random().toString(2),
-	cookie: {secure: false},
+	cookie: {secure: false, path: "/cryptoproblem_EG/"},
 });
 
 fastify.register(require("@fastify/view"), {
@@ -68,11 +68,11 @@ function ProblemtoDesc(problem){
 key={
 	n: ${key.n},
 	g: ${key.g},
-	h: ${key.h},
+	h: ${key.h}
 }
 c={
 	c1: ${problem.c1},
-	c2: ${problem.c2},
+	c2: ${problem.c2}
 }`;
 }
 
@@ -96,11 +96,11 @@ fastify.post('/cryptoproblem_EG/', async (request, res) => {
 			const flag = fs.readFileSync("/root/data/FLAG").toString();
 			session.result = `推測成功！ フラグは ${flag} です。`;
 		}else{
-			session.result = `推測失敗... 正解は ${String(m)} でした。`;
+			session.result = `推測失敗...\nc={\n	c1: ${problem.c1},\n	c2: ${problem.c2}\n}\nの正解は ${String(m)} でした。`;
 			session.problem = generateRandomProblem();
 		}
 	}
 	return res.view("index.ejs", {desc: ProblemtoDesc(session.problem), ...session});
 });
 
-fastify.listen(26457, '0.0.0.0');
+fastify.listen({port: 26457, host: '0.0.0.0'});
