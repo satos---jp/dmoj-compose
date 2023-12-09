@@ -27,8 +27,13 @@ WORKDIR /home/ubuntu
 RUN git clone --depth 1 --recursive https://github.com/DMOJ/online-judge site
 # COPY ./online-judge site
 
+WORKDIR /home/ubuntu/site
+RUN git fetch origin 292ba1a600091dd30c41f34fead38deadaf76536
+RUN git checkout 292ba1a600091dd30c41f34fead38deadaf76536
+
 # RUN git clone --depth 1 --recursive git@github.com:satos---jp/dmoj-online-judge-private.git site
 
+WORKDIR /home/ubuntu
 RUN sudo chown -R ubuntu:www-data site
 
 RUN git clone --depth 1 --recursive -b 3.2.23 https://github.com/django/django django
