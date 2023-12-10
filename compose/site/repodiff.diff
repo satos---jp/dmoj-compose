@@ -12,7 +12,7 @@ index a755bd0f..b073f92f 100644
  resources/select2-dmoj.css
 diff --git a/dmoj/local_settings.py b/dmoj/local_settings.py
 new file mode 100644
-index 00000000..116bc4ae
+index 00000000..978f1832
 --- /dev/null
 +++ b/dmoj/local_settings.py
 @@ -0,0 +1,330 @@
@@ -131,7 +131,7 @@ index 00000000..116bc4ae
 +)
 +
 +# The sender for the aforementioned emails.
-+SERVER_EMAIL = 'DMOJ: Modern Online Judge <errors@dmoj.ca>'
++SERVER_EMAIL = 'ThisIsInvalidSender@example.com'
 +
 +
 +##################################################
@@ -159,7 +159,7 @@ index 00000000..116bc4ae
 +SITE_NAME = 'DMOJ'
 +SITE_LONG_NAME = 'DMOJ: Modern Online Judge'
 +SITE_ADMIN_EMAIL = 'admin@example.com'
-+TERMS_OF_SERVICE_URL = '//dmoj.ca/tos' # Use a flatpage.
++TERMS_OF_SERVICE_URL = '' # Use a flatpage.
 +
 +## Bridge controls.
 +# The judge connection address and port; where the judges will connect to the site.
@@ -347,7 +347,7 @@ index 00000000..116bc4ae
 +# Do try to keep it separate so you can quickly patch in new settings.
 +DMOJ_PROBLEM_DATA_ROOT = "/home/ubuntu/problems"
 diff --git a/dmoj/settings.py b/dmoj/settings.py
-index a08bbd8d..e622693b 100644
+index a08bbd8d..4ec1ca7c 100644
 --- a/dmoj/settings.py
 +++ b/dmoj/settings.py
 @@ -44,9 +44,9 @@ DMOJ_2FA_HARDCORE = False
@@ -363,9 +363,31 @@ index a08bbd8d..e622693b 100644
  
  ACE_URL = '//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3'
  SELECT2_JS_URL = '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js'
+@@ -305,20 +305,7 @@ IMPERSONATE_DISABLE_LOGGING = True
+ 
+ ACCOUNT_ACTIVATION_DAYS = 7
+ 
+-AUTH_PASSWORD_VALIDATORS = [
+-    {
+-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+-    },
+-    {
+-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+-    },
+-    {
+-        'NAME': 'judge.utils.pwned.PwnedPasswordsValidator',
+-    },
+-    {
+-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+-    },
+-]
++AUTH_PASSWORD_VALIDATORS = []
+ 
+ SILENCED_SYSTEM_CHECKS = ['urls.W002', 'fields.W342']
+ 
 diff --git a/gen_diff.sh b/gen_diff.sh
 new file mode 100755
-index 00000000..94f6d74a
+index 00000000..741751cd
 --- /dev/null
 +++ b/gen_diff.sh
 @@ -0,0 +1,6 @@
@@ -373,7 +395,7 @@ index 00000000..94f6d74a
 +
 +# git diff master > ../dmoj-private/dmoj_docker/docker/site/repodiff.diff
 +
-+git diff master > ../satos-judger-yml/site/repodiff.diff
++git diff master > ../satos-judger-yml/compose/site/repodiff.diff
 +
 diff --git a/judge/fixtures/demo.json b/judge/fixtures/demo.json
 index 306d8b5e..0d4f101c 100644
@@ -552,6 +574,64 @@ index 306d8b5e..0d4f101c 100644
 -        "pk": 1
 -    }
  ]
+diff --git a/judge/fixtures/navbar.json b/judge/fixtures/navbar.json
+index d43868df..6253b19b 100644
+--- a/judge/fixtures/navbar.json
++++ b/judge/fixtures/navbar.json
+@@ -46,53 +46,5 @@
+         },
+         "model": "judge.navigationbar",
+         "pk": 3
+-    },
+-    {
+-        "fields": {
+-            "key": "contest",
+-            "label": "Contests",
+-            "level": 0,
+-            "lft": 1,
+-            "order": 5,
+-            "parent": null,
+-            "path": "/contests/",
+-            "regex": "^/contest",
+-            "rght": 2,
+-            "tree_id": 4
+-        },
+-        "model": "judge.navigationbar",
+-        "pk": 5
+-    },
+-    {
+-        "fields": {
+-            "key": "about",
+-            "label": "About",
+-            "level": 0,
+-            "lft": 1,
+-            "order": 6,
+-            "parent": null,
+-            "path": "/about/",
+-            "regex": "^/about/$",
+-            "rght": 4,
+-            "tree_id": 5
+-        },
+-        "model": "judge.navigationbar",
+-        "pk": 6
+-    },
+-    {
+-        "fields": {
+-            "key": "status",
+-            "label": "Status",
+-            "level": 1,
+-            "lft": 2,
+-            "order": 7,
+-            "parent": 6,
+-            "path": "/status/",
+-            "regex": "^/status/$|^/judge/",
+-            "rght": 3,
+-            "tree_id": 5
+-        },
+-        "model": "judge.navigationbar",
+-        "pk": 7
+     }
+ ]
 diff --git a/judge/forms.py b/judge/forms.py
 index 87003e56..486031e9 100644
 --- a/judge/forms.py
@@ -614,7 +694,7 @@ index 5aa6c676..70f1793b 100644
      def __str__(self):
          return _('Source of %(submission)s') % {'submission': self.submission}
 diff --git a/judge/views/register.py b/judge/views/register.py
-index f5cdd640..253c2708 100644
+index f5cdd640..a944275f 100644
 --- a/judge/views/register.py
 +++ b/judge/views/register.py
 @@ -1,4 +1,7 @@
@@ -643,6 +723,61 @@ index f5cdd640..253c2708 100644
  from registration.forms import RegistrationForm
  from sortedm2m.forms import SortedMultipleChoiceField
  
+@@ -37,10 +47,11 @@ class CustomRegistrationForm(RegistrationForm):
+         captcha = ReCaptchaField(widget=ReCaptchaWidget())
+ 
+     def clean_email(self):
+-        if User.objects.filter(email=self.cleaned_data['email']).exists():
+-            raise forms.ValidationError(gettext('The email address "%s" is already taken. Only one registration '
+-                                                'is allowed per address.') % self.cleaned_data['email'])
+-        validate_email_domain(self.cleaned_data['email'])
++        # if User.objects.filter(email=self.cleaned_data['email']).exists():
++        #     raise forms.ValidationError(gettext('The email address "%s" is already taken. Only one registration '
++        #                                         'is allowed per address.') % self.cleaned_data['email'])
++        # validate_email_domain(self.cleaned_data['email'])
++        # print("cleaning_email",self.cleaned_data['email'])
+         return self.cleaned_data['email']
+ 
+     def clean_organizations(self):
+@@ -86,9 +97,9 @@ class RegistrationView(OldRegistrationView):
+         initial = super(RegistrationView, self).get_initial(*args, **kwargs)
+         initial['timezone'] = settings.DEFAULT_USER_TIME_ZONE
+         initial['language'] = Language.objects.get(key=settings.DEFAULT_USER_LANGUAGE)
++        initial['email'] = "atgt@example.com"
+         return initial
+ 
+-
+ class ActivationView(OldActivationView):
+     title = _('Activation Key Invalid')
+     template_name = 'registration/activate.html'
+diff --git a/judge/views/user.py b/judge/views/user.py
+index 19baad6d..68b4c044 100644
+--- a/judge/views/user.py
++++ b/judge/views/user.py
+@@ -137,14 +137,15 @@ class CustomLoginView(LoginView):
+     redirect_authenticated_user = True
+ 
+     def form_valid(self, form):
+-        password = form.cleaned_data['password']
+-        validator = PwnedPasswordsValidator()
+-        try:
+-            validator.validate(password)
+-        except ValidationError:
+-            self.request.session['password_pwned'] = True
+-        else:
+-            self.request.session['password_pwned'] = False
++        # password = form.cleaned_data['password']
++        # validator = PwnedPasswordsValidator()
++        # try:
++        #     validator.validate(password)
++        # except ValidationError:
++        #     self.request.session['password_pwned'] = True
++        # else:
++        #     self.request.session['password_pwned'] = False
++        self.request.session['password_pwned'] = False
+         return super().form_valid(form)
+ 
+ 
 diff --git a/requirements.txt b/requirements.txt
 index db098fab..088a38b4 100644
 --- a/requirements.txt
@@ -669,3 +804,45 @@ index 892a9183..6cf3dc1a 100644
                          event.preventDefault();
                          $('#problem_submit').find(':submit').attr('disabled', false);
                      }
+diff --git a/templates/registration/registration_form.html b/templates/registration/registration_form.html
+index 494d8def..f70e6f07 100644
+--- a/templates/registration/registration_form.html
++++ b/templates/registration/registration_form.html
+@@ -142,14 +142,7 @@
+                 <div class="form-field-error">{{ form.username.errors }}</div>
+             {% endif %}
+ 
+-            <div class="block-header">{{ _('Email') }}</div>
+-            <span class="fullwidth{% if form.email.errors %}-error{% endif %}">{{ form.email }}</span>
+-            {% if form.email.errors %}
+-                <div class="form-field-error">{{ form.email.errors }}</div>
+-            {% endif %}
+-
+             <div class="block-header">{{ _('Password') -}}
+-                <small>(<a href="#" class="pass-req-link">?</a>)</small>
+             </div>
+             <div style="display: none" class="pass-req alert alert-info">
+                 <ul>
+@@ -170,6 +163,14 @@
+                 <div class="form-field-error">{{ form.password2.errors }}</div>
+             {% endif %}
+ 
++            <div hidden>
++            <div> {{ _('これらがhiddenなのは謎には関係ないです。単に消せませんでした。') }} </div>
++            <div class="block-header">{{ _('Email') }}</div>
++            <span class="fullwidth{% if form.email.errors %}-error{% endif %}">{{ form.email }}</span>
++            {% if form.email.errors %}
++                <div class="form-field-error">{{ form.email.errors }}</div>
++            {% endif %}
++
+             <div class="block-header">{{ _('Timezone') }}<small>{{ _('(select your closest major city)') }}</small></div>
+             <div class="fullwidth">
+                 <div>{{ form.timezone }}
+@@ -188,6 +189,7 @@
+             {% if form.organizations.errors %}
+                 <div class="form-field-error">{{ form.organizations.errors }}</div>
+             {% endif %}
++            </div>
+ 
+             {% if form.newsletter %}
+                 <div style="padding-top: 0.5em;">{{ form.newsletter }}

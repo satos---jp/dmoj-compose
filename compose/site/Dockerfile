@@ -38,6 +38,9 @@ RUN sudo chown -R ubuntu:www-data site
 
 RUN git clone --depth 1 --recursive -b 3.2.23 https://github.com/django/django django
 
+# Rquired for mysql client
+RUN sudo apt-get install -y pkg-config
+
 COPY repodiff.diff site/repodiff.diff
 RUN cd site && git apply repodiff.diff
 
@@ -46,9 +49,6 @@ RUN cd django && git apply djangodiff.diff
 
 RUN cd /home/ubuntu && \
     python3 -m venv site
-
-# Rquired for mysql client
-RUN sudo apt-get install -y pkg-config
 
 WORKDIR /home/ubuntu/site
 

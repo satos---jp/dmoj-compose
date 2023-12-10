@@ -8,11 +8,11 @@ class Problem:
 
     Webサーバーのソースコードとデータベースの初期化に使ったデータは [web.zip](../../static/atgtstaticdata/webproblem/web.zip) からダウンロードできます。
 
-    フラグ(flagさんのメッセージ)の形式は`ATGT{[A-Z_]*}`です。
+    フラグ(flagさんのメッセージ)の形式は`ATGT{[^}]*}`です。
 
     """
 		
-		probs = [{'in': f'', 'out': 'ATGT{THIS_IS_BLIND_SQLI}'}]
+		probs = [{'in': f'', 'out': 'ATGT{Congrats! You solved all problems.}'}]
 		
 		self.problems = probs
 		self.langs = ["text"]
