@@ -65,9 +65,9 @@
             "authors": [
                 1
             ],
-            "content": "このサイトはDMOJジャッジシステムをお借りして構築していますが本家DMOJのサイトはこの匁には関係ありません。`atgt2023wh4kk44m3.xyz`以外のサーバーに対する不正アクセスは行わないでください。\n\nまた`atgt2023wh4kk44m3.xyz`に対するサーバーが落ちるほどのDOSは困るのでおやめください。\n\nパスワードリセット機能はありません。\n\nSanity Checkのフラグは`ATGT{Now_you_can_say_you've_played_CTF_before!}`です。",
+            "content": "`atgt2023wh4kk44m3.xyz`以外のサーバーに対する不正アクセスは行わないでください。\n\nまた`atgt2023wh4kk44m3.xyz`に対するサーバーが落ちるほどのDOSは困るのでおやめください。\n\nSanity Checkのフラグは`ATGT{Now_you_can_say_you've_played_CTF_before!}`です。",
             "og_image": "",
-            "publish_on": "2000-01-01T00:00:00Z",
+            "publish_on": "2023-12-01T00:00:00Z",
             "slug": "notice",
             "sticky": true,
             "summary": "",

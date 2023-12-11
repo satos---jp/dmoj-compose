@@ -12,10 +12,10 @@ index a755bd0f..b073f92f 100644
  resources/select2-dmoj.css
 diff --git a/dmoj/local_settings.py b/dmoj/local_settings.py
 new file mode 100644
-index 00000000..978f1832
+index 00000000..a4d532b1
 --- /dev/null
 +++ b/dmoj/local_settings.py
-@@ -0,0 +1,330 @@
+@@ -0,0 +1,331 @@
 +#####################################
 +########## Django settings ##########
 +#####################################
@@ -46,8 +46,9 @@ index 00000000..978f1832
 +# Caching. You can use memcached or redis instead.
 +# Documentation: <https://docs.djangoproject.com/en/1.11/topics/cache/>
 +CACHES = {
-+    'default': {
-+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'
++    "default": {
++        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
++        "LOCATION": "127.0.0.1:11211",
 +    }
 +}
 +
@@ -385,6 +386,77 @@ index a08bbd8d..4ec1ca7c 100644
  
  SILENCED_SYSTEM_CHECKS = ['urls.W002', 'fields.W342']
  
+diff --git a/dmoj/urls.py b/dmoj/urls.py
+index f2d117da..bc25d036 100644
+--- a/dmoj/urls.py
++++ b/dmoj/urls.py
+@@ -25,6 +25,11 @@ from judge.views.widgets import martor_image_uploader
+ 
+ admin.autodiscover()
+ 
++def exception(request):
++    if not request.user.is_superuser:
++        raise Http404()
++    raise RuntimeError('@Xyene asked me to cause this')
++
+ register_patterns = [
+     path('activate/complete/',
+          TitledTemplateView.as_view(template_name='registration/activation_complete.html',
+@@ -44,11 +49,11 @@ register_patterns = [
+          name='registration_disallowed'),
+     path('login/', user.CustomLoginView.as_view(), name='auth_login'),
+     path('logout/', user.UserLogoutView.as_view(), name='auth_logout'),
+-    path('password/change/', user.CustomPasswordChangeView.as_view(), name='password_change'),
++    path('password/change/', exception, name='password_change'),
+     path('password/change/done/', auth_views.PasswordChangeDoneView.as_view(
+         template_name='registration/password_change_done.html',
+     ), name='password_change_done'),
+-    path('password/reset/', user.CustomPasswordResetView.as_view(), name='password_reset'),
++    path('password/reset/', exception, name='password_reset'),
+     re_path(r'^password/reset/confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',
+             auth_views.PasswordResetConfirmView.as_view(
+                 template_name='registration/password_reset_confirm.html',
+@@ -60,7 +65,7 @@ register_patterns = [
+         template_name='registration/password_reset_done.html',
+     ), name='password_reset_done'),
+     path('social/error/', register.social_auth_error, name='social_auth_error'),
+-    path('email/change/', user.EmailChangeRequestView.as_view(), name='email_change'),
++    path('email/change/', exception, name='email_change'),
+     path('email/change/activate/<str:activation_key>/',
+          user.EmailChangeActivateView.as_view(), name='email_change_activate'),
+ 
+@@ -78,18 +83,16 @@ register_patterns = [
+ ]
+ 
+ 
+-def exception(request):
+-    if not request.user.is_superuser:
+-        raise Http404()
+-    raise RuntimeError('@Xyene asked me to cause this')
+-
+-
+ def paged_list_view(view, name):
+     return include([
+         path('', view.as_view(), name=name),
+         path('<int:page>', view.as_view(), name=name),
+     ])
+ 
++def exception_problem(request,problem):
++    if not request.user.is_superuser:
++        raise Http404()
++    raise RuntimeError('@Xyene asked me to cause this')
+ 
+ urlpatterns = [
+     path('', blog.PostList.as_view(template_name='home.html', title=_('Home')), kwargs={'page': 1}, name='home'),
+@@ -123,7 +126,7 @@ urlpatterns = [
+         path('/data/<path:path>', problem_data_file, name='problem_data_file'),
+ 
+         path('/tickets', ticket.ProblemTicketListView.as_view(), name='problem_ticket_list'),
+-        path('/tickets/new', ticket.NewProblemTicketView.as_view(), name='new_problem_ticket'),
++        path('/tickets/new', exception_problem, name='new_problem_ticket'),
+ 
+         path('/vote', problem.ProblemVote.as_view(), name='problem_vote'),
+         path('/vote/delete', problem.DeleteProblemVote.as_view(), name='delete_problem_vote'),
 diff --git a/gen_diff.sh b/gen_diff.sh
 new file mode 100755
 index 00000000..741751cd
@@ -397,6 +469,26 @@ index 00000000..741751cd
 +
 +git diff master > ../satos-judger-yml/compose/site/repodiff.diff
 +
+diff --git a/judge/comments.py b/judge/comments.py
+index 21481394..fbc3343a 100644
+--- a/judge/comments.py
++++ b/judge/comments.py
+@@ -42,14 +42,9 @@ class CommentForm(ModelForm):
+ 
+     def clean(self):
+         if self.request is not None and self.request.user.is_authenticated:
+-            profile = self.request.profile
+-            if profile.mute:
+-                raise ValidationError(_('Your part is silent, little toad.'))
+-            elif not self.request.user.is_staff and not profile.has_any_solves:
+-                raise ValidationError(_('You must solve at least one problem before your voice can be heard.'))
++            raise ValidationError(_('Comment is disabled.'))
+         return super(CommentForm, self).clean()
+ 
+-
+ class CommentedDetailView(TemplateResponseMixin, SingleObjectMixin, View):
+     comment_page = None
+ 
 diff --git a/judge/fixtures/demo.json b/judge/fixtures/demo.json
 index 306d8b5e..0d4f101c 100644
 --- a/judge/fixtures/demo.json
@@ -693,6 +785,22 @@ index 5aa6c676..70f1793b 100644
  
      def __str__(self):
          return _('Source of %(submission)s') % {'submission': self.submission}
+diff --git a/judge/views/comment.py b/judge/views/comment.py
+index 7b2e086a..c95014ef 100644
+--- a/judge/views/comment.py
++++ b/judge/views/comment.py
+@@ -33,9 +33,8 @@ def vote_comment(request, delta):
+     if 'id' not in request.POST or len(request.POST['id']) > 10:
+         return HttpResponseBadRequest()
+ 
+-    if not request.user.is_staff and not request.profile.has_any_solves:
+-        return HttpResponseBadRequest(_('You must solve at least one problem before you can vote.'),
+-                                      content_type='text/plain')
++    return HttpResponseBadRequest(_('Vote is disabled.'),
++                                  content_type='text/plain')
+ 
+     if request.profile.mute:
+         return HttpResponseBadRequest(_('Your part is silent, little toad.'), content_type='text/plain')
 diff --git a/judge/views/register.py b/judge/views/register.py
 index f5cdd640..a944275f 100644
 --- a/judge/views/register.py
@@ -750,8 +858,35 @@ index f5cdd640..a944275f 100644
  class ActivationView(OldActivationView):
      title = _('Activation Key Invalid')
      template_name = 'registration/activate.html'
+diff --git a/judge/views/ticket.py b/judge/views/ticket.py
+index eec3d45b..f551e70f 100644
+--- a/judge/views/ticket.py
++++ b/judge/views/ticket.py
+@@ -41,11 +41,7 @@ class TicketForm(forms.Form):
+ 
+     def clean(self):
+         if self.request is not None and self.request.user.is_authenticated:
+-            profile = self.request.profile
+-            if profile.mute:
+-                raise ValidationError(_('Your part is silent, little toad.'))
+-            if not self.request.in_contest and not profile.has_any_solves:
+-                raise ValidationError(_('You must solve at least one problem before you can create a ticket.'))
++            raise ValidationError(_('Ticket is disabled.'))
+         return super(TicketForm, self).clean()
+ 
+ 
+@@ -96,8 +92,7 @@ class NewProblemTicketView(ProblemMixin, TitleMixin, NewTicketView):
+                                      self.object.translated_name(self.request.LANGUAGE_CODE)))
+ 
+     def form_valid(self, form):
+-        if not self.object.is_accessible_by(self.request.user):
+-            raise Http404()
++        raise Http404()
+         return super().form_valid(form)
+ 
+ 
 diff --git a/judge/views/user.py b/judge/views/user.py
-index 19baad6d..68b4c044 100644
+index 19baad6d..66e97009 100644
 --- a/judge/views/user.py
 +++ b/judge/views/user.py
 @@ -137,14 +137,15 @@ class CustomLoginView(LoginView):
@@ -778,6 +913,15 @@ index 19baad6d..68b4c044 100644
          return super().form_valid(form)
  
  
+@@ -352,6 +353,8 @@ def edit_profile(request):
+     if request.profile.mute:
+         return generic_message(request, _("Can't edit profile"), _('Your part is silent, little toad.'), status=403)
+     if request.method == 'POST':
++        if f"{ request.user }" == "IKnowGenchi":
++            return generic_message(request, _("Can't edit profile"), _(f"{ request.user }のプロフィールは編集できないようにしています。"), status=403)
+         form = ProfileForm(request.POST, instance=request.profile, user=request.user)
+         if form.is_valid():
+             with revisions.create_revision(atomic=True):
 diff --git a/requirements.txt b/requirements.txt
 index db098fab..088a38b4 100644
 --- a/requirements.txt
@@ -789,8 +933,241 @@ index db098fab..088a38b4 100644
  django_compressor>=3
  django-mptt>=0.13
  django-pagedown<2
+diff --git a/templates/base.html b/templates/base.html
+index c866ab35..b8d923af 100644
+--- a/templates/base.html
++++ b/templates/base.html
+@@ -290,21 +290,7 @@
+     <footer>
+         <span id="footer-content">
+             <br>
+-            <a style="color: #808080" href="https://dmoj.ca">{{ _('proudly powered by **DMOJ**')|markdown('default', strip_paragraphs=True) }}</a> |
+-            {% if misc_config.footer %}
+-                {{ misc_config.footer|safe }} |
+-            {% endif %}
+-            <form action="{{ url('set_language') }}" method="post" style="display: inline">
+-                {% csrf_token %}
+-            <input name="next" type="hidden" value="{{ request.get_full_path() }}">
+-            <select name="language" onchange="form.submit()" style="height: 1.5em">
+-                {% for language in language_info_list(LANGUAGES) %}
+-                    <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %}selected{% endif %}>
+-                        {{ language.name_local }} ({{ language.code }})
+-                    </option>
+-                {% endfor %}
+-            </select>
+-          </form>
++            <div style="color: #808080">{{ _('proudly powered by **DMOJ**')|markdown('default', strip_paragraphs=True) }}</div>
+         </span>
+     </footer>
+ </div>
+diff --git a/templates/blog/content.html b/templates/blog/content.html
+index 062e19e7..5afcae63 100644
+--- a/templates/blog/content.html
++++ b/templates/blog/content.html
+@@ -35,12 +35,6 @@
+             {% endcache %}
+         </div>
+     </div>
+-    <hr>
+-    <span class="social">
+-        {{ post_to_facebook(request, post, '<i class="fa fa-facebook-official"></i>') }}
+-        {{ post_to_twitter(request, SITE_NAME + ':', post, '<i class="fa fa-twitter"></i>') }}
+-    </span>
+-    {% include "comments/list.html" %}
+ {% endblock %}
+ 
+ {% block bodyend %}
+diff --git a/templates/blog/list.html b/templates/blog/list.html
+index 75e12b37..841f0014 100644
+--- a/templates/blog/list.html
++++ b/templates/blog/list.html
+@@ -66,12 +66,6 @@
+                             {% with abs=_('posted on {time}'), rel=_('posted {time}') %}
+                                 {{ relative_time(post.publish_on, abs=abs, rel=rel) }}
+                             {% endwith %}
+-                        </span><span class="comment-data">
+-                            <a href="{{ url('blog_post', post.id, post.slug) }}#comments" class="comment-count-link">
+-                                <i class="fa fa-comments comment-icon"></i><span class="comment-count">
+-                                    {{- post_comment_counts[post.id] or 0 -}}
+-                                </span>
+-                            </a>
+                         </span>
+                         <div class="summary content-description">
+                             {% cache 86400 'post_summary' post.id %}
+@@ -150,26 +144,6 @@
+                 </div>
+             {% endif %}
+ 
+-            <div class="blog-sidebox sidebox">
+-                <h3>{{ _('Comment stream') }} <i class="fa fa-comments"></i></h3>
+-                <div class="sidebox-content">
+-                    <ul>
+-                        {% for comment in comments %}
+-                            <li>
+-                                <span style="padding-left:0.25em" class="poster">
+-                                    {{ link_user(comment.author) }}
+-                                </span> &rarr;
+-                                <a href="{{ comment.link }}#comment-{{ comment.id }}">{{ comment.page_title }}</a>
+-                            </li>
+-                        {% endfor %}
+-                    </ul>
+-                    <span class="rssatom">
+-                        <a href="{{ url('comment_rss') }}"><span><i class="fa fa-rss"></i></span> RSS</a>
+-                        /
+-                        <a href="{{ url('comment_atom') }}">Atom</a>
+-                    </span>
+-                </div>
+-            </div>
+             <div class="blog-sidebox sidebox">
+                 <h3>{{ _('New problems') }} <i class="fa fa-puzzle-piece"></i>
+                 </h3>
+@@ -179,11 +153,6 @@
+                             <li><a href="{{ url('problem_detail', problem.code) }}">{{ problem.name }}</a></li>
+                         {% endfor %}
+                     </ul>
+-                    <span class="rssatom">
+-                        <a href="{{ url('problem_rss') }}"><span><i class="fa fa-rss"></i></span> RSS</a>
+-                        /
+-                        <a href="{{ url('problem_atom') }}">Atom</a>
+-                    </span>
+                 </div>
+             </div>
+             {% if perms.judge.test_site and own_open_tickets %}
+diff --git a/templates/problem/list.html b/templates/problem/list.html
+index e9107b35..e4a52618 100644
+--- a/templates/problem/list.html
++++ b/templates/problem/list.html
+@@ -217,11 +217,6 @@
+                         <th class="ac-rate">
+                             <a href="{{ sort_links.ac_rate }}">{{ _('AC %%') }}{{ sort_order.ac_rate }}</a>
+                         </th>
+-                        <th class="editorial" title="{{ _('Editorial') }}">
+-                            <a href="{{ sort_links.editorial }}">
+-                                <i class="fa fa-book"></i>{{ sort_order.editorial }}
+-                            </a>
+-                        </th>
+                         <th class="users">
+                             <a href="{{ sort_links.user_count }}">{{ _('Users') }}{{ sort_order.user_count }}</a>
+                         </th>
+@@ -276,15 +271,6 @@
+                         <td class="p">{{ problem.points|floatformat }}{% if problem.partial %}p{% endif %}</td>
+                         {% if not request.in_contest %}
+                             <td class="ac-rate">{{ problem.ac_rate|floatformat(1) }}%</td>
+-                            <td>
+-                                {% if problem.has_public_editorial %}
+-                                    <a href="{{ url('problem_editorial', problem.code) }}">
+-                                        <i class="has-editorial-color fa fa-check-circle"></i>
+-                                    </a>
+-                                {% else %}
+-                                    <i class="no-editorial-color fa fa-minus-circle"></i>
+-                                {% endif %}
+-                            </td>
+                         {% endif %}
+                         <td class="users">
+                             <a href="{{ url('ranked_submissions', problem.code) }}">
+diff --git a/templates/problem/problem.html b/templates/problem/problem.html
+index d9909d98..3dec2a58 100644
+--- a/templates/problem/problem.html
++++ b/templates/problem/problem.html
+@@ -47,10 +47,6 @@
+ {% block content_js_media %}
+     {% include "comments/media-js.html" %}
+ 
+-    {% if vote_perm.can_view() %}
+-        <script src="{{ static('libs/chart.js/Chart.js') }}" type="text/javascript"></script>
+-        <script src="{{ static('problem-vote.js') }}" type="text/javascript"></script>
+-    {% endif %}
+ {% endblock %}
+ 
+ {% block title_row %}
+@@ -132,44 +128,6 @@
+     <div><a href="{{ url('chronological_submissions', problem.code) }}">{{ _('All submissions') }}</a></div>
+     <div><a href="{{ url('ranked_submissions', problem.code) }}">{{ _('Best submissions') }}</a></div>
+ 
+-    {% if vote_perm.can_view() %}
+-        <hr style="padding-top: 0.1em">
+-        {% if vote_perm.can_vote() %}
+-            <div><a href="#" data-featherlight="{{ url('problem_vote', problem.code) }}" id="problem-vote-button">
+-                {%- if vote is none -%}
+-                    {{ _('Vote on problem points') }}
+-                {%- else -%}
+-                    {{ _('Edit points vote (%(points)d)', points=vote.points) }}
+-                {%- endif -%}
+-            </a></div>
+-        {% endif %}
+-        <div><a href="#" data-featherlight="{{ url('problem_vote_stats', problem.code) }}">{{ _('Voting statistics') }}</a></div>
+-    {% endif %}
+-
+-    {% if (editorial and editorial.is_accessible_by(request.user)) and not request.in_contest %}
+-        <hr>
+-        <div><a href="{{ url('problem_editorial', problem.code) }}">{{ _('Read editorial') }}</a></div>
+-    {% endif %}
+-    {% if can_edit_problem %}
+-        <hr>
+-        <div>
+-            <a href="{{ url('problem_ticket_list', problem.code) }}">{{ _('Manage tickets') }}
+-                {% if num_open_tickets %}<span class="badge">{{ num_open_tickets }}</span>{% endif %}
+-            </a>
+-        </div>
+-        <div><a href="{{ url('admin:judge_problem_change', problem.id) }}">{{ _('Edit problem') }}</a></div>
+-        {% if not problem.is_manually_managed %}
+-            <div><a href="{{ url('problem_data', problem.code) }}">{{ _('Edit test data') }}</a></div>
+-        {% endif %}
+-    {% elif request.user.is_authenticated and has_tickets %}
+-        <hr>
+-        <div>
+-            <a href="{{ url('problem_ticket_list', problem.code) }}">{{ _('My tickets') }}
+-                {% if num_open_tickets %}<span class="badge">{{ num_open_tickets }}</span>{% endif %}
+-            </a>
+-        </div>
+-    {% endif %}
+-
+     {% if problem.is_subs_manageable_by(request.user) %}
+         <div>
+             <a href="{{ url('problem_manage_submissions', problem.code) }}">{{ _('Manage submissions') }}</a>
+@@ -313,40 +271,6 @@
+     {% endwith %}
+ {% endblock %}
+ 
+-{% block post_description_end %}
+-    {% if request.user.is_authenticated and not request.profile.mute %}
+-        <a href="{{ url('new_problem_ticket', problem.code) }}" class="button clarify">
+-            {%- if contest_problem and contest_problem.contest.use_clarifications and request.profile.current_contest.live -%}
+-                {{ _('Request clarification') }}
+-            {%- else -%}
+-                {{ _('Report an issue') }}
+-            {%- endif -%}
+-        </a>
+-    {% endif %}
+-{% endblock %}
+-
+-{% block comments %}
+-    {% if contest_problem and contest_problem.contest.use_clarifications %}
+-        <div class="clarifications-area">
+-            <h2><i class="fa fa-question-circle"></i> {{ _('Clarifications') }}</h2>
+-            {% if has_clarifications %}
+-                {% for clarification in clarifications %}
+-                    <div class="problem-clarification">
+-                        <div class="time">{{ relative_time(clarification.date) }}</div>
+-                        <span class="body">
+-                            {{ clarification.description|markdown('problem', MATH_ENGINE)|reference }}
+-                        </span>
+-                    </div>
+-                {% endfor %}
+-            {% else %}
+-                <p class="no-comments-message">{{ _('No clarifications have been made at this time.') }}</p>
+-            {% endif %}
+-        </div>
+-    {% else %}
+-        {% include "comments/list.html" %}
+-    {% endif %}
+-{% endblock %}
+-
+ {% block bodyend %}
+     {{ super() }}
+     {% include "comments/math.html" %}
 diff --git a/templates/problem/submit.html b/templates/problem/submit.html
-index 892a9183..6cf3dc1a 100644
+index 892a9183..1356bf78 100644
 --- a/templates/problem/submit.html
 +++ b/templates/problem/submit.html
 @@ -114,8 +114,8 @@
@@ -804,8 +1181,46 @@ index 892a9183..6cf3dc1a 100644
                          event.preventDefault();
                          $('#problem_submit').find(':submit').attr('disabled', false);
                      }
+@@ -132,14 +132,6 @@
+ {% block body %}
+     <br>
+     {% if not no_judges %}
+-        {% if default_lang not in form.fields.language.queryset %}
+-            <div class="alert alert-warning alert-dismissable">
+-                <a class="close">x</a>
+-                <b>{{ _('Warning!') }}</b>
+-                {{ _('Your default language, %(language)s, is unavailable for this problem and has been deselected.', language=bold(default_lang.name)) }}
+-            </div>
+-        {% endif %}
+-
+         {% if request.in_contest and submission_limit %}
+             {% if submissions_left > 0 %}
+                 <div class="alert alert-warning alert-dismissable">
+diff --git a/templates/registration/login.html b/templates/registration/login.html
+index 52e1c8d4..51b12b77 100644
+--- a/templates/registration/login.html
++++ b/templates/registration/login.html
+@@ -53,7 +53,6 @@
+             <button style="float:right;" type="submit">{{ _('Login!') }}</button>
+             <input type="hidden" name="next" value="{{ next }}">
+         </form>
+-        <a href="{{ url('password_reset') }}">{{ _('Forgot your password?') }}</a>
+ 
+         {% if form.has_google_auth or form.has_facebook_auth or form.has_github_auth %}
+             <h4>{{ _('Or log in with...') }}</h4>
+diff --git a/templates/registration/registration_complete.html b/templates/registration/registration_complete.html
+index 25903d7d..6f5edce0 100644
+--- a/templates/registration/registration_complete.html
++++ b/templates/registration/registration_complete.html
+@@ -1,4 +1,4 @@
+ {% extends "base.html" %}
+ {% block body %}
+-    <p>{{ _('You have successfully been registered. An email has been sent to the email address you provided to confirm your registration.') }}</p>
++    <p>{{ _('You have successfully been registered.') }}</p>
+ {% endblock %}
+\ No newline at end of file
 diff --git a/templates/registration/registration_form.html b/templates/registration/registration_form.html
-index 494d8def..f70e6f07 100644
+index 494d8def..4a70e036 100644
 --- a/templates/registration/registration_form.html
 +++ b/templates/registration/registration_form.html
 @@ -142,14 +142,7 @@
@@ -828,7 +1243,7 @@ index 494d8def..f70e6f07 100644
              {% endif %}
  
 +            <div hidden>
-+            <div> {{ _('これらがhiddenなのは謎には関係ないです。単に消せませんでした。') }} </div>
++            <div> {{ _('これらがhiddenなのは謎には関係ないです。') }} </div>
 +            <div class="block-header">{{ _('Email') }}</div>
 +            <span class="fullwidth{% if form.email.errors %}-error{% endif %}">{{ form.email }}</span>
 +            {% if form.email.errors %}
@@ -846,3 +1261,182 @@ index 494d8def..f70e6f07 100644
  
              {% if form.newsletter %}
                  <div style="padding-top: 0.5em;">{{ form.newsletter }}
+diff --git a/templates/submission/list.html b/templates/submission/list.html
+index aeba287b..7a958eae 100644
+--- a/templates/submission/list.html
++++ b/templates/submission/list.html
+@@ -348,10 +348,6 @@
+         </div>
+ 
+         <div id="content-left" class="submission">
+-            <div class="ws-closed">
+-                <a href="javascript:void(0)">{{ _('You were disconnected. Refresh to show latest updates.') }}</a>
+-            </div>
+-
+             <div id="submissions-table">
+                 {% set profile_id = request.profile.id if request.user.is_authenticated else 0 %}
+                 {% for submission in submissions %}
+diff --git a/templates/user/edit-profile.html b/templates/user/edit-profile.html
+index 845d3bf9..b2a6c3cf 100644
+--- a/templates/user/edit-profile.html
++++ b/templates/user/edit-profile.html
+@@ -270,6 +270,8 @@
+ 
+             {% csrf_token %}
+ 
++            <div hidden>
++            <div> {{ _('これらがhiddenなのは謎には関係ないです。') }} </div>
+             <div style="padding-top:0.5em" class="block-header grayed">{{ _('Self-description:') }}</div>
+             {{ form.about }}
+             <hr>
+@@ -310,136 +312,12 @@
+                     </div>
+                 {% endif %}
+             </div>
+-            <hr>
+-            <div class="settings" style="padding-top:0.7em">
+-                <div class="pane">
+-                    <table border="0">
+-                        {% if form.newsletter %}
+-                            <tr><td>
+-                                {{ form.newsletter }}
+-                                <label for="id_newsletter" style="float: unset" class="inline-header grayed">
+-                                        {{- _('Notify me about upcoming contests') -}}
+-                                </label>
+-                            </td></tr>
+-                        {% endif %}
+-                        <tr><td>
+-                            {{ form.test_site }}
+-                            <label for="id_test_site" style="float: unset" class="inline-header grayed">
+-                                {{- form.test_site.label -}}
+-                            </label>
+-                        </td></tr>
+-                        <tr><td>
+-                            <a href="https://www.gravatar.com/" target="_blank" class="inline-header" rel="noopener">
+-                                {{ _('Change your avatar') }}
+-                            </a>
+-                        </td></tr>
+-                        <tr><td>
+-                            <a href="{{ url('password_change') }}" class="inline-header">
+-                                {{ _('Change your password') }}
+-                            </a>
+-                        </td></tr>
+-                        <tr><td>
+-                            <a href="{{ url('email_change') }}" class="inline-header">
+-                                {{ _('Change your email') }}
+-                            </a>
+-                        </td></tr>
+-                        {% if can_download_data %}
+-                            <tr><td>
+-                                <a href="{{ url('user_prepare_data') }}" class="inline-header">
+-                                    {{ _('Download your data') }}
+-                                </a>
+-                            </td></tr>
+-                        {% endif %}
+-                        <tr><td>
+-                            <span id="api-token-td" class="inline-header grayed">
+-                                {{ _('API token:') }}
+-                                {% if profile.api_token %}
+-                                    <a id="generate-api-token-button" href="{{ url('generate_api_token') }}"
+-                                        class="button inline-button">{{ _('Regenerate') }}</a>
+-                                    <a id="remove-api-token-button" href="{{ url('remove_api_token') }}"
+-                                        class="button inline-button ml-5">{{ _('Remove') }}</a>
+-                                    <div class="api-token" id="api-token">{{ _('Hidden') }}</div>
+-                                {% else %}
+-                                    <a id="generate-api-token-button" href="{{ url('generate_api_token') }}"
+-                                        class="button inline-button">{{ _('Generate') }}</a>
+-                                    <div class="api-token" id="api-token"></div>
+-                                {% endif %}
+-                            </span>
+-                        </td></tr>
+-                    </table>
+-                </div>
+-                <div class="pane">
+-                    <div>
+-                        {% if profile.is_totp_enabled %}
+-                            <div class="block-header grayed">{{ _('Two-factor authentication is enabled:') }}</div>
+-                            <div class="block-buttons">
+-                                {% if require_staff_2fa and request.user.is_staff and not profile.is_webauthn_enabled %}
+-                                    <a id="disable-2fa-button" class="button inline-button">{{ _('Disable') }}</a>
+-                                {% else %}
+-                                    <a href="{{ url('disable_2fa') }}"
+-                                       class="button inline-button">{{ _('Disable') }}</a>
+-                                {% endif %}
+-                                <a href="{{ url('refresh_2fa') }}" class="button inline-button">{{ _('Refresh') }}</a>
+-                            </div>
+-                            <div class="block-header grayed">
+-                                {{ _('Scratch codes:') }}
+-                                {% if profile.scratch_codes %}
+-                                    <a id="generate-scratch-codes-button" href="{{ url('generate_scratch_codes') }}"
+-                                       class="button inline-button">{{ _('Regenerate') }}</a>
+-                                    <div id="hidden-word">{{ _('Hidden') }}</div>
+-                                {% else %}
+-                                    <a id="generate-scratch-codes-button" href="{{ url('generate_scratch_codes') }}"
+-                                       class="button inline-button">{{ _('Generate') }}</a>
+-                                {% endif %}
+-                                <div style="display: none" id="scratch-codes-regen">
+-                                    <div id="scratch-codes-text">
+-                                        {{ _('Below is a list of one-time use scratch codes.') }}
+-                                        {{ _('These codes can only be used once and are for emergency use.') }}
+-                                        {{ _('You can use these codes to login to your account or disable two-factor authentication.') }}
+-                                        {{ _('If you ever need more scratch codes, you can regenerate them here.') }}
+-                                        {{ _('Please write these down and keep them in a secure location.') }}<br><br>
+-                                        {{ _('You will not be able to view your scratch codes after you leave this page!') }}</div>
+-                                    <pre><code id="scratch-codes"></code></pre>
+-                                </div>
+-                            </div>
+-                        {% else %}
+-                            <span class="inline-header grayed">
+-                                {{ _('Two-factor Authentication is disabled:') }}
+-                                <a href="{{ url('enable_2fa') }}" class="button inline-button">{{ _('Enable') }}</a>
+-                            </span>
+-                        {% endif %}
+-                    </div>
+-                    <span class="grayed">
+-                    {% if HAS_WEBAUTHN %}
+-                        <div style="padding-bottom:0.4em" class="block-header grayed">
+-                            {{- _('Security keys:') -}}
+-                        </div>
+-                        <table class="table">
+-                            {% if profile.is_webauthn_enabled %}
+-                                {% for credential in profile.webauthn_credentials.all() %}
+-                                    <tr>
+-                                        <td>{{ credential.name }}</td>
+-                                        <td>
+-                                            <button class="webauthn-delete inline-button"
+-                                                    data-delete-url="{{ url('webauthn_delete', credential.id) }}">
+-                                                {{ _('Delete') }}
+-                                            </button>
+-                                        </td>
+-                                    </tr>
+-                                {% endfor %}
+-                            {% endif %}
+-                            <tr>
+-                                <td><input id="new-webauthn-name" type="text" placeholder="{{ _('Enter a name for this key') }}"></td>
+-                                <td><button id="new-webauthn" class="inline-button">{{ _('Add') }}</button></td>
+-                            </tr>
+-                        </table>
+-                    {% endif %}
+-                    </span>
+-                </div>
+             </div>
+             <hr>
+-            <div class="block-header grayed">{{ _('User-script:') }}</div>
+-            {{ form.user_script }}
++            <div class="pane">
++                <div class="block-header grayed">{{ _('User-script:') }}</div>
++                {{ form.user_script }}
++            </div>
+             <hr>
+ 
+             <input type="submit" class="submit-bar" value="{{ _('Update profile') }}">
+diff --git a/templates/user/user-list-tabs.html b/templates/user/user-list-tabs.html
+index e6112c60..4bdc8d3e 100644
+--- a/templates/user/user-list-tabs.html
++++ b/templates/user/user-list-tabs.html
+@@ -2,5 +2,4 @@
+ 
+ {% block tabs %}
+     {{ make_tab('list', 'fa-users', url('user_list'), _('Leaderboard')) }}
+-    {{ make_tab('organizations', 'fa-university', url('organization_list'), _('Organizations')) }}
+ {% endblock %}

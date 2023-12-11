@@ -41,6 +41,9 @@ RUN git clone --depth 1 --recursive -b 3.2.23 https://github.com/django/django d
 # Rquired for mysql client
 RUN sudo apt-get install -y pkg-config
 
+# Install memcached for django cache
+RUN sudo apt-get install -y memcached
+
 COPY repodiff.diff site/repodiff.diff
 RUN cd site && git apply repodiff.diff
 
@@ -68,6 +71,10 @@ RUN . bin/activate && \
     pip install wheel && \
     pip install uwsgi && \
     mkdir conf
+
+# For memcached
+RUN . bin/activate && \
+    pip install pymemcache
 
 RUN sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*
 

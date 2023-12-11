@@ -1,12 +1,15 @@
 class Problem:
 	def __init__(self):
 		self.id = "ctf_Rev"
-		self.title = "Rev"
+		self.title = "Reversing"
 		self.desc = """
 		
-		Brainf\\*ckプログラム[problem.bf](../../static/atgtstaticdata/revproblem/problem.bf)に対して、
+		Brainf\\*ckプログラム [problem.bf](../../static/atgtstaticdata/revproblem/problem.bf) に対して、
 		この問題のフラグを [convert.py](../../static/atgtstaticdata/revproblem/convert.py) で変換した結果を与えると、
-		`5619979299176935-83255212932352802752-132802392063035145044727-212802440330906867718050232--9196719061001048939-1351873658--1358860079-1205682559-1005657023-` が出力されました。フラグを求めてください。フラグの形式は `ATGT{[^}]*}`です。
+
+		`5619979299176935-83255212932352802752-132802392063035145044727-212802440330906867718050232--9196719061001048939-1351873658--1358860079-1205682559-1005657023-`
+
+		が出力されました。フラグを求めてください。フラグの形式は `ATGT{[^}]*}`です。
 
 		例えば、 `ThisIsNotFlag` という文字列をconvert.pyで変換すると
 
