@@ -22,11 +22,9 @@ fastify.register(require('@fastify/mysql'), {
 const sessions = new Map();
 
 async function get_tsubuyaki_list(){
-	const connection = await fastify.mysql.getConnection();
-	const [data] = await connection.query(
+	const [data] = await fastify.mysql.query(
 		`select name, isprivate, msg from dmoj.tsubuyaki`, []
 	);
-	connection.release();
 	return data.map(({name, isprivate, msg}) => ({
 		name,
 		msg: isprivate === 0 ? msg : "*".repeat(msg.length),
@@ -48,11 +46,9 @@ fastify.post('/webproblem/', async (request, res) => {
 	}
 	const session = sessions.get(request.session.sessionId);
 	if(request.body.username && request.body.password){
-		const connection = await fastify.mysql.getConnection();
-		const [rows, fields] = await connection.query(
+		const [rows, fields] = await fastify.mysql.query(
 			'select id, password from dmoj.auth_user where username=?', [request.body.username]
 		);
-		connection.release();
 		rows.forEach(({id, password}) => {
 			const hash = password.split('$');
 			if(hash[0] !== 'pbkdf2_sha256'){
@@ -73,22 +69,18 @@ fastify.post('/webproblem/', async (request, res) => {
 		if(isNaN(session.id)){
 			session.result = `ログインしてください。`;
 		}else{
-			const connection = await fastify.mysql.getConnection();
-			const [[point]] = await connection.query(
+			const [[point]] = await fastify.mysql.query(
 				`select points from dmoj.judge_profile where id=${session.id}`, []
 			);
-			connection.release();
 			
 			const required = 130; 
 			if(!Number.isInteger(point.points) || point.points < required){
 				session.result = `つぶやくには ${required} 点以上獲得してください。(あなたの現在の得点は ${point.points} 点です)`;
 			}else{
-				const connection = await fastify.mysql.getConnection();
 				const isprivate = request.body.isprivate === "private";
-				await connection.query(
+				await fastify.mysql.query(
 					`insert into dmoj.tsubuyaki value ("${session.username}",${isprivate ? 1 : 0},"${request.body.postMessage}")`, []
 				);
-				connection.release();
 				session.result = `つぶやきました。`;
 			}
 		}
