@@ -55,8 +55,12 @@ function generateRandomProblem(){
 function problemtoStr(problem){
 	return `n = ${n}
 a = ${problem.a}
-a^x = ${problem.ax}
-a^y = ${problem.ay}`;
+a^x mod n = ${problem.ax}
+a^y mod n = ${problem.ay}`;
+}
+
+function problemtodesc(problem){
+	return `以下の情報から a^xy mod n を当ててください。\n${problemtoStr(problem)}`;
 }
 
 fastify.get('/cryptoproblem_DH/', async (request, res) => {
@@ -64,7 +68,7 @@ fastify.get('/cryptoproblem_DH/', async (request, res) => {
 		sessions.set(request.session.sessionId, {problem: generateRandomProblem(), result: ""});
 	}
 	const session = sessions.get(request.session.sessionId);
-	return res.view("index.ejs", {desc: `以下の情報からa^xyを当ててください。\n${problemtoStr(session.problem)}`, ...session});
+	return res.view("index.ejs", {desc: problemtodesc(session.problem), ...session});
 });
 
 fastify.post('/cryptoproblem_DH/', async (request, res) => {
@@ -78,7 +82,7 @@ fastify.post('/cryptoproblem_DH/', async (request, res) => {
 			const flag = fs.readFileSync("/root/data/flag").toString();
 			session.result = `推測成功！ フラグは ${flag} です。`;
 		}else{
-			session.result = `推測失敗...\n${problemtoStr(problem)}\nの正解は ${String(problem.axy)} でした。`;
+			session.result = `推測失敗...\n${problemtoStr(problem)}\nのときの a^xy mod n は ${String(request.body.guess)} ではなく ${String(problem.axy)} でした。`;
 			session.problem = generateRandomProblem();
 		}
 	}else if(request.body.try){
@@ -91,7 +95,7 @@ fastify.post('/cryptoproblem_DH/', async (request, res) => {
 			session.result = `問題生成結果:\n${problemtoStr(problem)}`;
 		}
 	}
-	return res.view("index.ejs", {desc: `以下の情報からa^xyを当ててください。\n${problemtoStr(session.problem)}`, ...session});
+	return res.view("index.ejs", {desc: problemtodesc(session.problem), ...session});
 });
 
 fastify.listen({port: 24494, host: '0.0.0.0'});

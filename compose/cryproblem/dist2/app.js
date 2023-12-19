@@ -96,7 +96,7 @@ fastify.post('/cryptoproblem_EG/', async (request, res) => {
 			const flag = fs.readFileSync("/root/data/FLAG").toString();
 			session.result = `推測成功！ フラグは ${flag} です。`;
 		}else{
-			session.result = `推測失敗...\nc={\n	c1: ${problem.c1},\n	c2: ${problem.c2}\n}\nの正解は ${String(m)} でした。`;
+			session.result = `推測失敗...\nc={\n	c1: ${problem.c1},\n	c2: ${problem.c2}\n}\nの復号結果は ${String(request.body.guess)} ではなく ${String(m)} でした。`;
 			session.problem = generateRandomProblem();
 		}
 	}
